@@ -1,0 +1,36 @@
+{
+  "name": "mithril-tree-component",
+  "version": "0.0.1",
+  "description": "A tree component for the Mitrhil framework.",
+  "main": "dist/index.js",
+  "scripts": {
+    "link": "npm link",
+    "start": "parcel watch src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erikvullings/mithril-tree-component.git"
+  },
+  "keywords": [
+    "mithril",
+    "tree",
+    "component",
+    "typescript"
+  ],
+  "author": "Erik Vullings <erik.vullings@gmail.com> (http://www.tno.nl)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/erikvullings/mithril-tree-component/issues"
+  },
+  "homepage": "https://github.com/erikvullings/mithril-tree-component#readme",
+  "dependencies": {
+    "mithril": "^1.1.6"
+  },
+  "devDependencies": {
+    "@types/mithril": "^1.1.12",
+    "parcel-bundler": "^1.9.7",
+    "parcel-plugin-typescript": "^1.0.0",
+    "typescript": "^2.9.2"
+  }
+}

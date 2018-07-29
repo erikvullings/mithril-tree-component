@@ -1,0 +1,45 @@
+.main {
+  padding: 10px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+/* .secondary-content {
+  text-align: right!;
+} */
+
+ul.tree-container {
+  padding-left: 0;
+  margin: .5rem 0 1rem 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+ul.tree-item-body {
+  padding-left: 2rem;
+}
+
+li .tree-item-header {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1.5;
+  padding: 1rem;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+}
+
+li .tree-item-header i {
+  width: 2rem;
+  font-size: 1.6rem;
+  display: inline-block;
+  text-align: center;
+  margin-right: 0.2rem;
+}
