@@ -19,13 +19,13 @@
   },
   "homepage": "https://github.com/erikvullings/mithril-tree-component#readme",
   "scripts": {
-    "postinstall": "lerna bootstrap --hoist && lerna run link",
+    "postinstall": "lerna bootstrap && lerna run buildcomp && lerna run link",
     "build": "lerna run build",
     "clean": "lerna run --parallel clean",
     "start": "lerna run --parallel start",
     "publish": "lerna publish --force-publish=*"
   },
   "devDependencies": {
-    "lerna": "^3.0.0-rc.0"
+    "lerna": "^2.11.0"
   }
 }

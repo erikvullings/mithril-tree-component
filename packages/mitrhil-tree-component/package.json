@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "link": "npm link",
-    "start": "parcel watch src/index.ts",
+    "buildcomp": "npm run build",
+    "start": "tsc -w",
+    "build": "parcel build src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
