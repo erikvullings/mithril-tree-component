@@ -1,6 +1,14 @@
 import { Component, Attributes } from 'mithril';
 import { ITreeItem } from './tree-item';
 
+export type TreeItemAction =
+  | 'create'
+  | 'delete'
+  | 'add_children'
+  | 'expand_more'
+  | 'expand_less'
+  | 'spacer';
+
 export interface ITreeOptions {
   /** Name of the name property, e.g. how the tree item is displayed in the tree (default 'name') */
   name: string;
@@ -12,47 +20,56 @@ export interface ITreeOptions {
   children: string;
   /** Name of the open property, e.g. to display or hide the children (default 'isOpen') */
   isOpen: string;
+  /**
+   * At what level do you prevent creating new children: 1 is only children, 2 is grandchildren, etc.
+   * Default is Number.MAX_SAFE_INTEGER. NOTE: It does not prevent you to move items with children.
+   */
+  maxDepth: number;
+  /** If true (default), you can have multiple root nodes */
+  multipleRoots: boolean;
   /** When a tree item is selected, this function is invoked */
-  onselect: (treeItem: ITreeItem) => void;
+  onSelect: (treeItem: ITreeItem) => void;
   /** Before a tree item is created, this function is invoked. When it returns false, the action is cancelled. */
-  onbeforecreate: (treeItem: ITreeItem) => boolean;
+  onBeforeCreate: (treeItem: ITreeItem) => boolean;
   /** When a tree item is created, this function is invoked */
-  oncreate: (treeItem: ITreeItem) => void;
+  onCreate: (treeItem: ITreeItem) => void;
   /** Before a tree item is deleted, this function is invoked. When it returns false, the action is cancelled. */
-  onbeforedelete: (treeItem: ITreeItem) => boolean;
+  onBeforeDelete: (treeItem: ITreeItem) => boolean;
   /** When a tree item is deleted, this function is invoked */
-  ondelete: (treeItem: ITreeItem) => void;
+  onDelete: (treeItem: ITreeItem) => void;
   /** Before a tree item is updated, this function is invoked. When it returns false, the action is cancelled. */
-  onbeforeupdate: (treeItem: ITreeItem) => boolean;
+  onBeforeUpdate: (treeItem: ITreeItem) => boolean;
   /** When a tree item is updated, this function is invoked */
-  onupdate: (treeItem: ITreeItem) => void;
+  onUpdate: (treeItem: ITreeItem) => void;
   /**
    * Factory function that can be used to create new items.
    * If parent treeItem is missing, a root item should be created.
    */
   create: (parent?: ITreeItem) => ITreeItem;
   /** Does the tree support editing, e.g. creating, deleting or updating. */
-  editable: {
+  editable: Partial<{
     /** Allow creating of new items. */
     canCreate: boolean;
-    /** Allow deleting of new items. */
+    /** Allow deleting of items. */
     canDelete: boolean;
-    /** Allow updating of new items. */
+    /** Allow deleting of items that are parents (so all children would be deleted too). */
+    canDeleteParent: boolean;
+    /** Allow updating of items. */
     canUpdate: boolean;
-  };
+  }>;
   /**
    * Component to display icons to create, delete, etc.
    * The component will receive an onclick attribute to perform its function.
    */
-  button: (
-    name: 'create' | 'delete' | 'up' | 'down' | 'indent' | 'outdent' | 'expand_more' | 'expand_less'
-  ) => Component<Attributes>;
+  button: (name: TreeItemAction) => Component<Attributes>;
+}
+
+export interface IInternalTreeOptions extends ITreeOptions {
   /** Internal function: creates a button either using the button component, or a simple text node */
-  _button: (
-    name: 'create' | 'delete' | 'up' | 'down' | 'indent' | 'outdent' | 'expand_more' | 'expand_less'
-  ) => Component<Attributes>;
+  _button: (name: TreeItemAction) => Component<Attributes>;
   /** Internal function: retrieves the tree item based on its id */
   _find: (id: string | number) => ITreeItem | undefined;
   /** Internal function: creates a sibling tree item  */
-  _createItem: (siblingId?: string | number) => ITreeItem;
+  _createItem: (siblingId?: string | number) => void;
+  _deleteItem: (id?: string | number) => void;
 }

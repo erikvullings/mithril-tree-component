@@ -1,2 +1,2 @@
 export * from './tree-item';
-export * from './tree-options';
+export { ITreeOptions, TreeItemAction } from './tree-options';

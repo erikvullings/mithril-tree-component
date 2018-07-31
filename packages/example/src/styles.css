@@ -4,11 +4,13 @@
 
 .clickable {
   cursor: pointer;
+  margin: 0 10px;
+  width: 1em;
 }
 
-/* .secondary-content {
-  text-align: right!;
-} */
+.secondary-content {
+   float: right;
+}
 
 ul.tree-container {
   padding-left: 0;
