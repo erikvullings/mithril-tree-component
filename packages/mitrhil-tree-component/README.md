@@ -16,10 +16,6 @@ Functionality:
   - onBefore[Create | Update | Delete]: can be used to intercept (and block) tree item actions. For example, can be used to add your own TreeItem creation logic.
   - on[Create | Update | Delete]: when the creation is done.
 
-This repository contains two projects:
-- An example project, showcasing the usage of the component.
-- The mithril-tree-component itself.
-
 ## Usage
 
 ```bash
