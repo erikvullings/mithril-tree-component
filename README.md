@@ -84,11 +84,13 @@ export const TreeView = () => {
 };
 ```
 
-## Build instructions
+## Contributing
+Pull requests and stars are always welcome.
 
-This repository uses [Lerna](https://lernajs.io) to manage multiple projects (packages) in one repository. To compile and run both packages, proceed as follows (from the root):
+For bugs and feature requests, please create an issue.
 
-```bash
-npm i
-npm start
-```
+1. Fork it!
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request :D

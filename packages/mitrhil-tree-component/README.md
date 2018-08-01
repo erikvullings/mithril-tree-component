@@ -79,3 +79,12 @@ export const TreeView = () => {
   };
 };
 ```
+
+## Build instructions
+
+This repository uses [Lerna](https://lernajs.io) to manage multiple projects (packages) in one repository. To compile and run both packages, proceed as follows (from the root):
+
+```bash
+npm i
+npm start
+```
