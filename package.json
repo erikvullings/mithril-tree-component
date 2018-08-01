@@ -23,6 +23,7 @@
     "build": "lerna run build",
     "clean": "lerna run --parallel clean",
     "start": "lerna run --parallel start",
+    "deploy": "lerna run --parallel deploy",
     "publish": "lerna publish --force-publish=*"
   },
   "devDependencies": {

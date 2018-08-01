@@ -27,7 +27,7 @@
   "dependencies": {
     "materialize-css": "^0.100.2",
     "mithril": "^1.1.6",
-    "mithril-tree-component": "^0.0.1"
+    "mithril-tree-component": "^0.1.0"
   },
   "devDependencies": {
     "@types/mithril": "^1.1.12",
