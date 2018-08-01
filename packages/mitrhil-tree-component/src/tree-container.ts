@@ -1,26 +1,33 @@
 import m, { Component, Vnode, Attributes } from 'mithril';
 import { TreeItem, TreeItemIdPrefix } from './tree-item';
-import { ITreeOptions, TreeItemAction, IInternalTreeOptions } from './models/tree-options';
+import { ITreeOptions, TreeItemAction, IInternalTreeOptions, TreeItemUpdateAction } from './models/tree-options';
 import { ITreeItem } from './models/tree-item';
 import { uuid4 } from './utils/utils';
+import { ITreeState } from './models/tree-state';
+
+export let log: (...args: any[]) => void = () => undefined;
 
 export const TreeContainer = <T extends ITreeItem[]>({
   attrs,
 }: Vnode<{ tree: T; options?: Partial<ITreeOptions> }>): Component<{ tree: T; options?: Partial<ITreeOptions> }> => {
   const tree = attrs.tree;
+  const state: ITreeState = {
+    selectedId: '',
+    dragId: '',
+  };
 
   const setDefaultOptions = () => {
     const wrapper = (
-      defaultFn: (treeItem: ITreeItem) => void,
-      beforeFn?: (treeItem: ITreeItem) => boolean,
-      afterFn?: (treeItem: ITreeItem) => void
-    ) => (treeItem: ITreeItem) => {
-      if (beforeFn && beforeFn(treeItem) === false) {
+      defaultFn: (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => void,
+      beforeFn?: (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => boolean,
+      afterFn?: (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => void
+    ) => (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => {
+      if (beforeFn && beforeFn(treeItem, action, newParent) === false) {
         return;
       }
-      defaultFn(treeItem);
+      defaultFn(treeItem, action, newParent);
       if (afterFn) {
-        afterFn(treeItem);
+        afterFn(treeItem, action, newParent);
       }
     };
     const defaultOptions = {
@@ -31,17 +38,57 @@ export const TreeContainer = <T extends ITreeItem[]>({
       isOpen: 'isOpen',
       maxDepth: Number.MAX_SAFE_INTEGER,
       multipleRoots: true,
-      editable: { canCreate: false, canDelete: false, canUpdate: false },
+      logging: false,
+      editable: { canCreate: false, canDelete: false, canUpdate: false, canDeleteParent: false },
     } as Partial<IInternalTreeOptions>;
     const opts = {
       ...defaultOptions,
       ...attrs.options,
     } as IInternalTreeOptions;
 
+    if (opts.logging) {
+      log = console.log;
+    }
     const id = opts.id;
     const parentId = opts.parentId;
     const name = opts.name;
     const children = opts.children;
+    const isOpen = opts.isOpen;
+
+    const button: (name: TreeItemAction) => Component<Attributes> = (buttonName: TreeItemAction) => {
+      if (opts.button) {
+        return opts.button(buttonName);
+      }
+      const textSymbol = () => {
+        switch (buttonName) {
+          case 'add_children':
+          case 'create':
+            return '✚';
+          case 'delete':
+            return '✖';
+          case 'expand_more':
+            return '►';
+          case 'expand_less':
+            return '◢';
+          case 'spacer':
+            return '';
+        }
+      };
+      const classNames = () => {
+        switch (buttonName) {
+          case 'expand_more':
+          case 'expand_less':
+            return 'span.clickable.collapse-expand-item';
+          case 'spacer':
+            return 'span.spacer';
+          default:
+            return '.act';
+        }
+      };
+      return {
+        view: (vnode: Vnode) => m(`${classNames()}`, vnode.attrs, textSymbol()),
+      };
+    };
 
     /** Recursively find a tree item */
     const find = (tId: string | number = '', partialTree: T = tree) => {
@@ -97,31 +144,6 @@ export const TreeContainer = <T extends ITreeItem[]>({
       return found;
     };
 
-    const button: (name: TreeItemAction) => Component<Attributes> = (buttonName: TreeItemAction) => {
-      if (opts.button) {
-        return opts.button(buttonName);
-      }
-      const textSymbol = () => {
-        switch (buttonName) {
-          case 'create':
-            return '+';
-          case 'delete':
-            return 'x';
-          case 'add_children':
-            return '>';
-          case 'expand_more':
-            return '►';
-          case 'expand_less':
-            return '◢';
-          case 'spacer':
-            return ' ';
-        }
-      };
-      return {
-        view: (vnode: Vnode) => m('span.clickable', vnode.attrs, textSymbol()),
-      };
-    };
-
     /** Create a new tree item. */
     const createTreeItem = (pId: string | number = '') => {
       const create = () => {
@@ -141,7 +163,11 @@ export const TreeContainer = <T extends ITreeItem[]>({
       (ti: ITreeItem) => {
         const parent = find(ti[parentId]);
         if (parent) {
+          if (!(parent[children] instanceof Array)) {
+            parent[children] = [];
+          }
           parent[children].push(ti);
+          parent[isOpen] = true;
         } else {
           tree.push(ti);
         }
@@ -152,40 +178,72 @@ export const TreeContainer = <T extends ITreeItem[]>({
 
     const onDelete = wrapper((ti: ITreeItem) => deleteTreeItem(ti[id]), opts.onBeforeDelete, opts.onDelete);
 
-    const onUpdate = wrapper((ti: ITreeItem) => updateTreeItem(ti), opts.onBeforeUpdate, opts.onUpdate);
+    const onUpdate = wrapper(
+      (ti: ITreeItem, action: TreeItemUpdateAction = 'edit', newParent?: ITreeItem) => updateTreeItem(ti),
+      opts.onBeforeUpdate,
+      opts.onUpdate
+    );
+
+    const onSelect = (ti: ITreeItem, isSelected: boolean) => {
+      state.selectedId = isSelected ? ti[id] : '';
+      if (opts.onSelect) {
+        opts.onSelect(ti, isSelected);
+      }
+    };
 
     const dragOpts = {
       ondrop: (ev: any) => {
-        console.time('ondrop');
         ev.preventDefault(); // do not open a link
         const convertId = (cid: string | number) => (isNaN(+cid) ? cid : +cid);
         const sourceId = convertId(ev.dataTransfer.getData('text').replace(TreeItemIdPrefix, ''));
         const targetId = convertId((findId(ev.target) || '').replace(TreeItemIdPrefix, ''));
+        log(`Dropping ${sourceId} on ${targetId}`);
+        if (sourceId === targetId) {
+          return false;
+        }
         const tiSource = find(sourceId);
         const tiTarget = find(targetId);
         if (tiSource && tiTarget) {
+          if (opts.onBeforeUpdate && opts.onBeforeUpdate(tiSource, 'move', tiTarget) === false) {
+            return false;
+          }
           deleteTreeItem(sourceId);
           tiSource[parentId] = tiTarget[id];
           if (!tiTarget[children]) {
             tiTarget[children] = [];
           }
           tiTarget[children].push(tiSource);
+          tiTarget[isOpen] = true;
+          if (opts.onUpdate) {
+            opts.onUpdate(tiSource, 'move', tiTarget);
+          }
+        } else if (tiSource) {
+          if (opts.onBeforeUpdate && opts.onBeforeUpdate(tiSource, 'move', tree) === false) {
+            return false;
+          }
+          deleteTreeItem(sourceId);
+          tiSource[parentId] = undefined;
+          tree.push(tiSource);
+          if (opts.onUpdate) {
+            opts.onUpdate(tiSource, 'move', tree);
+          }
         }
-        // ev.target.appendChild(document.getElementById(data));
-        console.log('Drop: ' + sourceId);
-        const target = ev.target;
-        if (target) {
-          console.log('Dropped on: ' + findId(ev.target));
-        }
-        console.timeEnd('ondrop');
       },
-      ondragover: (ev: any) => ev.preventDefault(),
+      ondragover: (ev: any) => {
+        const sourceId = state.dragId;
+        const targetId = findId(ev.target) || '';
+        if (sourceId !== targetId) {
+          ev.preventDefault();
+        }
+      },
       ondragstart: (ev: DragEvent) => {
         const target = ev.target;
         if (target) {
           ev.dataTransfer.setData('text', (target as any).id);
+          ev.dataTransfer.effectAllowed = 'move';
+          state.dragId = (target as any).id;
         }
-        console.log('Drag start: ' + ev.dataTransfer.getData('text'));
+        log('Drag start: ' + ev.dataTransfer.getData('text'));
       },
     } as Attributes;
 
@@ -195,6 +253,7 @@ export const TreeContainer = <T extends ITreeItem[]>({
         ...opts,
         _button: button,
         _find: find,
+        onSelect,
         onCreate,
         onDelete,
         onUpdate,
@@ -211,17 +270,20 @@ export const TreeContainer = <T extends ITreeItem[]>({
 
   return {
     view: () =>
-      m('ul.tree-container', [
-        ...tree.map(item => m(TreeItem, { item, options, dragOptions, key: item[options.id] })),
-        m(
-          'li',
+      m(
+        `.tree-container[draggable=${options.editable.canUpdate}]`, { ...dragOptions },
+        m('ul', [
+          ...tree.map(item => m(TreeItem, { item, options, dragOptions, state, key: item[options.id] })),
           m(
-            '.tree-item.clickable',
-            options.editable.canCreate && options.multipleRoots
-              ? m('.secondary-content', m(options._button('create'), { onclick: () => options._createItem() }))
-              : ''
-          )
-        ),
-      ]),
+            'li',
+            m(
+              '.tree-item.clickable',
+              options.editable.canCreate && options.multipleRoots
+                ? m('.indent', m(options._button('create'), { onclick: () => options._createItem() }))
+                : ''
+            )
+          ),
+        ])
+      ),
   } as Component<{ tree: T; options?: Partial<ITreeOptions> }>;
 };

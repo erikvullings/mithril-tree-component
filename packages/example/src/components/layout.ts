@@ -9,7 +9,7 @@ export const Layout = () => ({
           m(
             'a.brand-logo',
             { style: 'margin-left: 20px' },
-            m('span', { style: 'margin-top: 10px; margin-left: -10px;' }, 'Mithril Tree Component example')
+            m('span', { style: 'margin-top: 10px; margin-left: -10px;' }, 'MITHRIL TREE COMPONENT')
           ),
         ])
       ),

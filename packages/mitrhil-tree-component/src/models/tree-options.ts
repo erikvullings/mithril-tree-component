@@ -1,6 +1,7 @@
 import { Component, Attributes } from 'mithril';
 import { ITreeItem } from './tree-item';
 
+/** Indicates the type of action is performed on the tree item. */
 export type TreeItemAction =
   | 'create'
   | 'delete'
@@ -8,6 +9,9 @@ export type TreeItemAction =
   | 'expand_more'
   | 'expand_less'
   | 'spacer';
+
+/** Indicates the type of UPDATE action is performed on the tree item. */
+export type TreeItemUpdateAction = 'edit' | 'move';
 
 export interface ITreeOptions {
   /** Name of the name property, e.g. how the tree item is displayed in the tree (default 'name') */
@@ -27,8 +31,10 @@ export interface ITreeOptions {
   maxDepth: number;
   /** If true (default), you can have multiple root nodes */
   multipleRoots: boolean;
+  /** If enabled, turn on logging */
+  logging: boolean;
   /** When a tree item is selected, this function is invoked */
-  onSelect: (treeItem: ITreeItem) => void;
+  onSelect: (treeItem: ITreeItem, isSelected: boolean) => void;
   /** Before a tree item is created, this function is invoked. When it returns false, the action is cancelled. */
   onBeforeCreate: (treeItem: ITreeItem) => boolean;
   /** When a tree item is created, this function is invoked */
@@ -38,9 +44,9 @@ export interface ITreeOptions {
   /** When a tree item is deleted, this function is invoked */
   onDelete: (treeItem: ITreeItem) => void;
   /** Before a tree item is updated, this function is invoked. When it returns false, the action is cancelled. */
-  onBeforeUpdate: (treeItem: ITreeItem) => boolean;
+  onBeforeUpdate: (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => boolean;
   /** When a tree item is updated, this function is invoked */
-  onUpdate: (treeItem: ITreeItem) => void;
+  onUpdate: (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => void;
   /**
    * Factory function that can be used to create new items.
    * If parent treeItem is missing, a root item should be created.

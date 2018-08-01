@@ -1,47 +1,113 @@
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.clearfix::after {
+  content: '';
+  clear: both;
+  display: table;
+}
+
 .main {
   padding: 10px;
 }
 
-.clickable {
-  cursor: pointer;
-  margin: 0 10px;
-  width: 1em;
-}
-
-.secondary-content {
-   float: right;
-}
-
-ul.tree-container {
+.tree-container {
   padding-left: 0;
-  margin: .5rem 0 1rem 0;
+  margin: 0.5rem 0 1rem 0;
   border: 1px solid #e0e0e0;
   border-radius: 2px;
   overflow: hidden;
   position: relative;
 }
 
-ul.tree-item-body {
-  padding-left: 2rem;
-}
-
-li .tree-item-header {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
+.clickable {
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  line-height: 1.5;
-  padding: 1rem;
-  background-color: #fff;
-  border-bottom: 1px solid #ddd;
+  margin: 0 2px;
 }
 
-li .tree-item-header i {
-  width: 2rem;
-  font-size: 1.6rem;
-  display: inline-block;
+.collapse-expand-item {
+  margin: 0 10px;
+}
+
+.spacer {
+  margin: 0 17px;
+}
+
+.indent {
+  margin: 0 28px;
+}
+
+.moveable {
+  cursor: move;
+}
+
+.tree-item {
+  cursor: pointer;
+}
+
+.tree-item-header.active {
+  background: #e0e0e0;
+}
+
+.tree-item-header:focus {
+  color: blue;
+  background-color: #cf5c3f;
+}
+.tree-item-header {
+  line-height: 36px;
+}
+
+.tree-item-header a {
+  float: left;
+  color: #f2f2f2;
   text-align: center;
-  margin-right: 0.2rem;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.tree-item .act-group {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.5s linear;
+  float: right;
+}
+.tree-item-header:hover .act-group {
+  visibility: visible;
+  opacity: 1;
+}
+
+.act {
+  font-weight: bold;
+  cursor: pointer;
+  display: inline-block;
+  padding: 0 0.3rem;
+}
+
+.act:hover {
+  background: #e0e0e0;
+}
+
+.tree-item .act {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.5s linear;
+}
+
+.tree-item:hover .act {
+  visibility: visible;
+  opacity: 1;
+}
+
+ul.tree-item-body {
+  padding-left: 1.7rem;
+}
+
+span.tree-item-title {
+  margin-right: 1rem;
 }

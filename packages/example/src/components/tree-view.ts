@@ -24,11 +24,13 @@ export const TreeView = () => {
     parentId: 'parentId',
     isOpen: 'isOpen',
     name: 'title',
+    onSelect: (ti, isSelected) => console.log(`On ${isSelected ? 'select' : 'unselect'}: ${ti.title}`),
     onBeforeCreate: ti => console.log(`On before create ${ti.title}`),
     onCreate: ti => console.log(`On create ${ti.title}`),
     onBeforeDelete: ti => console.log(`On before delete ${ti.title}`),
     onDelete: ti => console.log(`On delete ${ti.title}`),
-    onBeforeUpdate: ti => console.log(`On before update ${ti.title}`),
+    onBeforeUpdate: (ti, action, newParent) =>
+      console.log(`On before ${action} update ${ti.title} to ${newParent ? newParent.title : ''}.`),
     onUpdate: ti => console.log(`On update ${ti.title}`),
     create: (parent?: IMyTree) => {
       const item = {} as IMyTree;
@@ -36,16 +38,16 @@ export const TreeView = () => {
       if (parent) {
         item.parentId = parent.id;
       }
-      item.title = `New item with id ${item.id}`;
+      item.title = `Created at ${new Date().toLocaleTimeString()}`;
       return item as ITreeItem;
     },
-    editable: { canCreate: true, canDelete: true, canUpdate: true, canDeleteParent: true },
+    editable: { canCreate: true, canDelete: true, canUpdate: true, canDeleteParent: false },
   } as ITreeOptions;
   return {
     view: () =>
       m('.row', [
-        m('.col.s6', [m('h3', 'Simple example'), m(TreeContainer, { tree, options })]),
-        m('.col.s6', [m('h3', 'The data'), m('pre', m('code', JSON.stringify(tree, null, 2)))]),
+        m('.col.s6', [m('h3', 'Mithril-tree-component'), m(TreeContainer, { tree, options })]),
+        m('.col.s6', [m('h3', 'Tree data'), m('pre', m('code', JSON.stringify(tree, null, 2)))]),
       ]),
   };
 };
