@@ -3,11 +3,12 @@
   "version": "0.0.1",
   "description": "A tree component for the Mitrhil framework.",
   "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "link": "npm link",
     "buildcomp": "npm run build",
     "start": "tsc -w",
-    "build": "parcel build src/index.ts",
+    "build": "tsc",
     "patch-release": "tsc && npm version patch && npm publish && git push --follow-tags",
     "minor-release": "tsc && npm version minor && npm publish && git push --follow-tags"
   },
