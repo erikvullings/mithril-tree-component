@@ -8,7 +8,8 @@
     "buildcomp": "npm run build",
     "start": "tsc -w",
     "build": "parcel build src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "patch-release": "tsc && npm version patch && npm publish && git push --follow-tags",
+    "minor-release": "tsc && npm version minor && npm publish && git push --follow-tags"
   },
   "repository": {
     "type": "git",
