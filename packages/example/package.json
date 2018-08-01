@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html --out-dir ./docs",
+    "build": "parcel build index.html --out-dir ../../docs",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d docs"
   },
