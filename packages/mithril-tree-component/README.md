@@ -1,8 +1,6 @@
 # mithril-tree-component
 
-A tree component for [Mithril](https://mithril.js.org) that supports drag-and-drop, as well as selecting, creating and deleting items.
-
-![Mithril-tree-component animation](./img/mithril-tree-component-animation.gif)
+A tree component for [Mithril](https://mithril.js.org) that supports drag-and-drop, as well as selecting, creating and deleting items. You can play with it [here](https://erikvullings.github.io/mithril-tree-component/#!/).
 
 **Functionality:**
 - Drag-and-drop to move items.
