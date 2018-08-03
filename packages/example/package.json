@@ -27,13 +27,13 @@
   "dependencies": {
     "materialize-css": "^0.100.2",
     "mithril": "^1.1.6",
-    "mithril-tree-component": "^0.1.0"
+    "mithril-tree-component": "^0.2.1"
   },
   "devDependencies": {
     "@types/mithril": "^1.1.12",
-    "autoprefixer": "^9.0.2",
+    "autoprefixer": "^9.1.0",
     "parcel-bundler": "^1.9.7",
     "parcel-plugin-typescript": "^1.0.0",
-    "typescript": "^3.0.1",
+    "typescript": "^3.0.1"
   }
 }
