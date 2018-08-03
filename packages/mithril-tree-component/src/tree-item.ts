@@ -16,7 +16,6 @@ export const TreeItem = ({ attrs }: Vnode<ITreeItemAttributes>): Component<ITree
   const options = attrs.options;
   const dragOptions = attrs.dragOptions;
   const state = attrs.state;
-  const name = options.name;
   const id = options.id;
   const parentId = options.parentId;
   const children = options.children;
@@ -27,7 +26,11 @@ export const TreeItem = ({ attrs }: Vnode<ITreeItemAttributes>): Component<ITree
   const hasChildren = () => treeItem[children] && treeItem[children].length;
   const toggle = () => {
     if (hasChildren()) {
-      treeItem[isOpen] = !treeItem[isOpen];
+      if (isOpen) {
+        treeItem[isOpen] = !treeItem[isOpen];
+      } else {
+        tiState.isOpen = !tiState.isOpen;
+      }
     }
   };
 
@@ -43,6 +46,12 @@ export const TreeItem = ({ attrs }: Vnode<ITreeItemAttributes>): Component<ITree
   const depth = (ti = treeItem, curDepth = 0): number => {
     const pId = ti[parentId];
     return pId ? depth(options._find(pId) as ITreeItem, curDepth + 1) : curDepth;
+  };
+
+  const isExpanded = () => hasChildren() && ((isOpen && treeItem[isOpen]) || tiState.isOpen);
+
+  const tiState = {
+    isOpen: false,
   };
 
   return {
@@ -81,7 +90,7 @@ export const TreeItem = ({ attrs }: Vnode<ITreeItemAttributes>): Component<ITree
                   : '',
               ])
             ),
-            hasChildren() && treeItem[isOpen]
+            isExpanded()
               ? m('ul.tree-item-body', [
                   ...treeItem.children.map((item: ITreeItem) =>
                     m(TreeItem, {

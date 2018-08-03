@@ -3,18 +3,31 @@
 A tree component for [Mithril](https://mithril.js.org) that supports drag-and-drop, as well as selecting, creating and deleting items. You can play with it [here](https://erikvullings.github.io/mithril-tree-component/#!/).
 
 **Functionality:**
-- Drag-and-drop to move items.
-- Create and delete tree items.
+- Drag-and-drop to move items (if editable.canUpdate is true).
+- Create and delete tree items (if editable.canDelete and editable.canDeleteParent is true).
 - Configurable properties for:
   - id property: unique id of the item.
   - parentId property: id of the parent.
-  - name property: display title.
+  - name property: display title. Alternatively, provide your own component.
   - children property: id of the property used for child tree nodes.
-  - isOpen: to indicate whether the tree should show the children.
+  - maxDepth: when specified, and editable.canCreate is true, do not add children that would exceed this depth, where depth is 0 for root items, 1 for children, etc.
+  - isOpen: to indicate whether the tree should show the children. If not provided, the open/close state is maintained internally.
+  - create: can be used to add your own TreeItem creation logic.
 - Callback events:
   - onSelect: when a tree item is selected.
-  - onBefore[Create | Update | Delete]: can be used to intercept (and block) tree item actions. For example, can be used to add your own TreeItem creation logic.
+  - onBefore[Create | Update | Delete]: can be used to intercept (and block) tree item actions. If the onBeforeX call returns false, the action is stopped.
   - on[Create | Update | Delete]: when the creation is done.
+
+This repository contains two projects:
+- An example project, showcasing the usage of the component.
+- The mithril-tree-component itself.
+
+## Changes
+
+### 0.3.0
+- maxDepth: can be set to limit the ability to create children.
+- treeItemView: to provide your own view component
+- open or close state when displaying children: can be maintained internally, so different components do not share open/close state.
 
 ## Usage
 
