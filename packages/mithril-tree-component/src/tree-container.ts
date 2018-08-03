@@ -1,6 +1,12 @@
 import m, { Component, Vnode, Attributes } from 'mithril';
 import { TreeItem, TreeItemIdPrefix } from './tree-item';
-import { ITreeOptions, TreeItemAction, IInternalTreeOptions, TreeItemUpdateAction } from './models/tree-options';
+import {
+  ITreeOptions,
+  TreeItemAction,
+  IInternalTreeOptions,
+  TreeItemUpdateAction,
+  ITreeItemViewComponent,
+} from './models/tree-options';
 import { ITreeItem } from './models/tree-item';
 import { uuid4 } from './utils/utils';
 import { ITreeState } from './models/tree-state';
@@ -191,6 +197,12 @@ export const TreeContainer = <T extends ITreeItem[]>({
       }
     };
 
+    const treeItemView =
+      opts.treeItemView ||
+      ({
+        view: (vnode: Vnode<ITreeItemViewComponent>) => vnode.attrs.treeItem[name],
+      } as Component<ITreeItemViewComponent>);
+
     const dragOpts = {
       ondrop: (ev: any) => {
         ev.preventDefault(); // do not open a link
@@ -251,12 +263,13 @@ export const TreeContainer = <T extends ITreeItem[]>({
       dragOptions: dragOpts,
       options: {
         ...opts,
-        _button: button,
-        _find: find,
+        treeItemView,
         onSelect,
         onCreate,
         onDelete,
         onUpdate,
+        _find: find,
+        _button: button,
         _deleteItem: deleteTreeItem,
         _createItem: createTreeItem,
       } as IInternalTreeOptions,
@@ -271,7 +284,8 @@ export const TreeContainer = <T extends ITreeItem[]>({
   return {
     view: () =>
       m(
-        `.tree-container[draggable=${options.editable.canUpdate}]`, { ...dragOptions },
+        `.tree-container[draggable=${options.editable.canUpdate}]`,
+        { ...dragOptions },
         m('ul', [
           ...tree.map(item => m(TreeItem, { item, options, dragOptions, state, key: item[options.id] })),
           m(

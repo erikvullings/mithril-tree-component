@@ -1,6 +1,6 @@
-import m from 'mithril';
+import m, { Vnode, Component } from 'mithril';
 import { unflatten } from '../utils';
-import { TreeContainer, ITreeOptions, ITreeItem, uuid4 } from 'mithril-tree-component';
+import { TreeContainer, ITreeOptions, ITreeItem, uuid4, ITreeItemViewComponent } from 'mithril-tree-component';
 
 interface IMyTree extends ITreeItem {
   id: number | string;
@@ -10,13 +10,13 @@ interface IMyTree extends ITreeItem {
 
 export const TreeView = () => {
   const data: IMyTree[] = [
-    { id: 1, parentId: 0, title: 'My id is 1' },
-    { id: 2, parentId: 1, title: 'My id is 2' },
-    { id: 3, parentId: 1, title: 'My id is 3' },
-    { id: 4, parentId: 2, title: 'My id is 4' },
-    { id: 5, parentId: 0, title: 'My id is 5' },
-    { id: 6, parentId: 0, title: 'My id is 6' },
-    { id: 7, parentId: 4, title: 'My id is 7' },
+    { id: 1, parentId: 0, title: 'My id is 1', description: 'Description of item 1.' },
+    { id: 2, parentId: 1, title: 'My id is 2', description: 'Description of item 2.' },
+    { id: 3, parentId: 1, title: 'My id is 3', description: 'Description of item 3.' },
+    { id: 4, parentId: 2, title: 'My id is 4', description: 'Description of item 4.' },
+    { id: 5, parentId: 0, title: 'My id is 5', description: 'Description of item 5.' },
+    { id: 6, parentId: 0, title: 'My id is 6', description: 'Description of item 6.' },
+    { id: 7, parentId: 4, title: 'My id is 7', description: 'Description of item 7.' },
   ];
   const tree = unflatten(data);
   const options = {
@@ -32,7 +32,6 @@ export const TreeView = () => {
     onBeforeUpdate: (ti, action, newParent) =>
       console.log(`On before ${action} update ${ti.title} to ${newParent ? newParent.title : ''}.`),
     onUpdate: ti => console.log(`On update ${ti.title}`),
-    maxDepth: 3,
     create: (parent?: IMyTree) => {
       const item = {} as IMyTree;
       item.id = uuid4();
@@ -42,12 +41,38 @@ export const TreeView = () => {
       item.title = `Created at ${new Date().toLocaleTimeString()}`;
       return item as ITreeItem;
     },
+    editable: { canCreate: false, canDelete: false, canUpdate: false, canDeleteParent: false },
+  } as ITreeOptions;
+
+  const options2 = {
+    ...options,
     editable: { canCreate: true, canDelete: true, canUpdate: true, canDeleteParent: false },
+  };
+
+  const options3 = {
+    ...options,
+    maxDepth: 3,
+    treeItemView: {
+      view: ({ attrs }: Vnode<ITreeItemViewComponent>) =>
+        m(
+          'div',
+          { style: 'display: inline-block; vertical-align: middle; line-height: 1.5rem;' },
+          m('div', { style: 'font-weight: bold;' }, `Depth ${attrs.depth}: ${attrs.treeItem.title}`),
+          m('div', { style: 'font-style: italic;' }, attrs.treeItem.description || '...')
+        ),
+    } as Component<ITreeItemViewComponent>,
   } as ITreeOptions;
   return {
     view: () =>
       m('.row', [
-        m('.col.s6', [m('h3', 'Mithril-tree-component'), m(TreeContainer, { tree, options })]),
+        m('.col.s6', [
+          m('h3', 'Readonly'),
+          m(TreeContainer, { tree, options }),
+          m('h3', 'CRUD'),
+          m(TreeContainer, { tree, options: options2 }),
+          m('h3', 'Own view, maxDepth 3'),
+          m(TreeContainer, { tree, options: options3 }),
+        ]),
         m('.col.s6', [m('h3', 'Tree data'), m('pre', m('code', JSON.stringify(tree, null, 2)))]),
       ]),
   };

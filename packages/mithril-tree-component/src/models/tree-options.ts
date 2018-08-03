@@ -13,7 +13,11 @@ export type TreeItemAction =
 /** Indicates the type of UPDATE action is performed on the tree item. */
 export type TreeItemUpdateAction = 'edit' | 'move';
 
+export interface ITreeItemViewComponent { treeItem: ITreeItem; depth: number; }
+
 export interface ITreeOptions {
+  /** If provided, this component is used to display the tree item. */
+  treeItemView: Component<ITreeItemViewComponent>;
   /** Name of the name property, e.g. how the tree item is displayed in the tree (default 'name') */
   name: string;
   /** Name of the ID property (default 'id') */

@@ -21,6 +21,7 @@ export const TreeItem = ({ attrs }: Vnode<ITreeItemAttributes>): Component<ITree
   const parentId = options.parentId;
   const children = options.children;
   const isOpen = options.isOpen;
+  const treeItemView = options.treeItemView;
 
   const treeItem = attrs.item;
   const hasChildren = () => treeItem[children] && treeItem[children].length;
@@ -65,7 +66,11 @@ export const TreeItem = ({ attrs }: Vnode<ITreeItemAttributes>): Component<ITree
                 m(options._button(hasChildren() ? (treeItem[isOpen] ? 'expand_less' : 'expand_more') : 'spacer'), {
                   onclick: () => toggle(),
                 }),
-                m('span.tree-item-title', { class: `${options.editable.canUpdate ? 'moveable' : ''}` }, treeItem[name]),
+                m(
+                  'span.tree-item-title',
+                  { class: `${options.editable.canUpdate ? 'moveable' : ''}` },
+                  m(treeItemView, { treeItem, depth: depth() })
+                ),
               ],
               m('.act-group', [
                 options.editable.canCreate && !hasChildren() && depth() < options.maxDepth
