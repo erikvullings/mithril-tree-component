@@ -101,10 +101,12 @@ export const TreeItem = ({ attrs }: Vnode<ITreeItemAttributes>): Component<ITree
                       key: item[id],
                     })
                   ),
-                  m(
-                    'li',
-                    m('.indent', m(options._button('create'), { onclick: () => options._createItem(treeItem[id]) }))
-                  ),
+                  options.editable.canCreate
+                    ? m(
+                        'li',
+                        m('.indent', m(options._button('create'), { onclick: () => options._createItem(treeItem[id]) }))
+                      )
+                    : '',
                 ])
               : '',
           ]
