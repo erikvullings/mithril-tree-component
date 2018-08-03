@@ -5,20 +5,20 @@ import { ITreeState } from './models/tree-state';
 
 export const TreeItemIdPrefix = 'tree-item-';
 
-export const TreeItem = ({
-  attrs,
-}: Vnode<{ item: ITreeItem; options: IInternalTreeOptions; dragOptions: Attributes; state: ITreeState }>): Component<{
+interface ITreeItemAttributes {
   item: ITreeItem;
   options: IInternalTreeOptions;
   state: ITreeState;
   dragOptions: Attributes;
-}> => {
+}
+
+export const TreeItem = ({ attrs }: Vnode<ITreeItemAttributes>): Component<ITreeItemAttributes> => {
   const options = attrs.options;
   const dragOptions = attrs.dragOptions;
   const state = attrs.state;
   const name = options.name;
   const id = options.id;
-  // const parentId = options.parentId;
+  const parentId = options.parentId;
   const children = options.children;
   const isOpen = options.isOpen;
 
@@ -38,6 +38,12 @@ export const TreeItem = ({
     }
   };
 
+  /** Compute the current depth of a (perhaps moved) tree item, where 0 is root, 1 is child, etc. */
+  const depth = (ti = treeItem, curDepth = 0): number => {
+    const pId = ti[parentId];
+    return pId ? depth(options._find(pId) as ITreeItem, curDepth + 1) : curDepth;
+  };
+
   return {
     view: () =>
       m(`li[id=${TreeItemIdPrefix}${treeItem[id]}][draggable=${options.editable.canUpdate}]`, dragOptions, [
@@ -47,12 +53,6 @@ export const TreeItem = ({
             onclick: (ev: MouseEvent) => {
               ev.stopPropagation();
               options.onSelect(treeItem, state.selectedId !== treeItem[id]);
-              // const target: any = ev.target || ev.srcElement;
-              // target.classList.toggle('active');
-              // if (options.onSelect) {
-              //   const isSelected = target.classList.contains('active');
-              //   options.onSelect(treeItem, isSelected);
-              // }
             },
           },
           [
@@ -68,7 +68,7 @@ export const TreeItem = ({
                 m('span.tree-item-title', { class: `${options.editable.canUpdate ? 'moveable' : ''}` }, treeItem[name]),
               ],
               m('.act-group', [
-                options.editable.canCreate && !hasChildren()
+                options.editable.canCreate && !hasChildren() && depth() < options.maxDepth
                   ? m(options._button('add_children'), { onclick: () => addChildren() })
                   : '',
                 options.editable.canDelete && (options.editable.canDeleteParent || !hasChildren())
@@ -79,7 +79,13 @@ export const TreeItem = ({
             hasChildren() && treeItem[isOpen]
               ? m('ul.tree-item-body', [
                   ...treeItem.children.map((item: ITreeItem) =>
-                    m(TreeItem, { item, options, dragOptions, state, key: item[id] })
+                    m(TreeItem, {
+                      item,
+                      options,
+                      dragOptions,
+                      state,
+                      key: item[id],
+                    })
                   ),
                   m(
                     'li',

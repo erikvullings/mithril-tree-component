@@ -32,6 +32,7 @@ export const TreeView = () => {
     onBeforeUpdate: (ti, action, newParent) =>
       console.log(`On before ${action} update ${ti.title} to ${newParent ? newParent.title : ''}.`),
     onUpdate: ti => console.log(`On update ${ti.title}`),
+    maxDepth: 3,
     create: (parent?: IMyTree) => {
       const item = {} as IMyTree;
       item.id = uuid4();
