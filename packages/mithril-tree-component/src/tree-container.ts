@@ -25,15 +25,26 @@ export const TreeContainer = <T extends ITreeItem[]>({
   const setDefaultOptions = () => {
     const wrapper = (
       defaultFn: (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => void,
-      beforeFn?: (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => boolean,
-      afterFn?: (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => void
-    ) => (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => {
-      if (beforeFn && beforeFn(treeItem, action, newParent) === false) {
-        return;
+      beforeFn?: (
+        treeItem: ITreeItem,
+        action?: TreeItemUpdateAction,
+        newParent?: ITreeItem
+      ) => boolean | void | Promise<boolean>,
+      afterFn?: (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => void | Promise<void>
+    ) => async (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => {
+      if (beforeFn) {
+        const before = beforeFn(treeItem, action, newParent);
+        const isAsync = typeof before !== 'boolean';
+        const result = isAsync ? await before : before;
+        if (result === false) {
+          return;
+        }
       }
-      defaultFn(treeItem, action, newParent);
+      const r = defaultFn(treeItem, action, newParent);
+      if (typeof r === 'function') { await r; }
       if (afterFn) {
-        afterFn(treeItem, action, newParent);
+        const after = afterFn(treeItem, action, newParent);
+        if (typeof after === 'function') { await after; }
       }
     };
     const defaultOptions = {
@@ -128,7 +139,9 @@ export const TreeContainer = <T extends ITreeItem[]>({
         found = treeItem[children] ? deleteTreeItem(tId, treeItem[children]) : false;
         if (found && treeItem[children].length === 0) {
           delete treeItem[children];
-          delete treeItem[opts.isOpen];
+          if (opts.isOpen) {
+            delete treeItem[opts.isOpen];
+          }
         }
         return found;
       });
@@ -173,7 +186,9 @@ export const TreeContainer = <T extends ITreeItem[]>({
             parent[children] = [];
           }
           parent[children].push(ti);
-          parent[isOpen] = true;
+          if (isOpen) {
+            parent[isOpen] = true;
+          }
         } else {
           tree.push(ti);
         }
@@ -225,7 +240,9 @@ export const TreeContainer = <T extends ITreeItem[]>({
             tiTarget[children] = [];
           }
           tiTarget[children].push(tiSource);
-          tiTarget[isOpen] = true;
+          if (isOpen) {
+            tiTarget[isOpen] = true;
+          }
           if (opts.onUpdate) {
             opts.onUpdate(tiSource, 'move', tiTarget);
           }

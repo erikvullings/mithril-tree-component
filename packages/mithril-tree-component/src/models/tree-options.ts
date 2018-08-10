@@ -2,18 +2,15 @@ import { Component, Attributes } from 'mithril';
 import { ITreeItem } from './tree-item';
 
 /** Indicates the type of action is performed on the tree item. */
-export type TreeItemAction =
-  | 'create'
-  | 'delete'
-  | 'add_children'
-  | 'expand_more'
-  | 'expand_less'
-  | 'spacer';
+export type TreeItemAction = 'create' | 'delete' | 'add_children' | 'expand_more' | 'expand_less' | 'spacer';
 
 /** Indicates the type of UPDATE action is performed on the tree item. */
 export type TreeItemUpdateAction = 'edit' | 'move';
 
-export interface ITreeItemViewComponent { treeItem: ITreeItem; depth: number; }
+export interface ITreeItemViewComponent {
+  treeItem: ITreeItem;
+  depth: number;
+}
 
 export interface ITreeOptions {
   /** If provided, this component is used to display the tree item. */
@@ -27,7 +24,7 @@ export interface ITreeOptions {
   /** Name of the children property (default 'children') */
   children: string;
   /** Name of the open property, e.g. to display or hide the children (default 'isOpen') */
-  isOpen: string;
+  isOpen: string | undefined;
   /**
    * At what level do you prevent creating new children: 1 is only children, 2 is grandchildren, etc.
    * Default is Number.MAX_SAFE_INTEGER. NOTE: It does not prevent you to move items with children.
@@ -38,24 +35,28 @@ export interface ITreeOptions {
   /** If enabled, turn on logging */
   logging: boolean;
   /** When a tree item is selected, this function is invoked */
-  onSelect: (treeItem: ITreeItem, isSelected: boolean) => void;
+  onSelect: (treeItem: ITreeItem, isSelected: boolean) => void | Promise<void>;
   /** Before a tree item is created, this function is invoked. When it returns false, the action is cancelled. */
-  onBeforeCreate: (treeItem: ITreeItem) => boolean;
-  /** When a tree item is created, this function is invoked */
-  onCreate: (treeItem: ITreeItem) => void;
+  onBeforeCreate: (treeItem: ITreeItem) => boolean | void | Promise<boolean>;
+  /** When a tree item has been created, this function is invoked */
+  onCreate: (treeItem: ITreeItem) => void | Promise<void>;
   /** Before a tree item is deleted, this function is invoked. When it returns false, the action is cancelled. */
-  onBeforeDelete: (treeItem: ITreeItem) => boolean;
-  /** When a tree item is deleted, this function is invoked */
-  onDelete: (treeItem: ITreeItem) => void;
-  /** Before a tree item is updated, this function is invoked. When it returns false, the action is cancelled. */
-  onBeforeUpdate: (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => boolean;
-  /** When a tree item is updated, this function is invoked */
-  onUpdate: (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => void;
+  onBeforeDelete: (treeItem: ITreeItem) => boolean | void | Promise<boolean>;
+  /** When a tree item has been deleted, this function is invoked */
+  onDelete: (treeItem: ITreeItem) => void | Promise<void>;
+  /** Before a tree item has been updated, this function is invoked. When it returns false, the action is cancelled. */
+  onBeforeUpdate: (
+    treeItem: ITreeItem,
+    action?: TreeItemUpdateAction,
+    newParent?: ITreeItem
+  ) => boolean | void | Promise<boolean>;
+  /** When a tree item has been updated, this function is invoked */
+  onUpdate: (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => void | Promise<void>;
   /**
    * Factory function that can be used to create new items.
    * If parent treeItem is missing, a root item should be created.
    */
-  create: (parent?: ITreeItem) => ITreeItem;
+  create: (parent?: ITreeItem) => ITreeItem | Promise<ITreeItem>;
   /** Does the tree support editing, e.g. creating, deleting or updating. */
   editable: Partial<{
     /** Allow creating of new items. */
