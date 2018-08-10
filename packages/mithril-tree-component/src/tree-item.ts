@@ -37,7 +37,9 @@ export const TreeItem = ({ attrs }: Vnode<ITreeItemAttributes>): Component<ITree
   const addChildren = () => {
     if (!hasChildren()) {
       treeItem[children] = [];
-      treeItem[isOpen] = true;
+      if (isOpen) {
+        treeItem[isOpen] = true;
+      }
       options._createItem(treeItem[id]);
     }
   };
@@ -72,9 +74,18 @@ export const TreeItem = ({ attrs }: Vnode<ITreeItemAttributes>): Component<ITree
                 class: `${state.selectedId === treeItem[id] ? 'active' : ''}`,
               },
               [
-                m(options._button(hasChildren() ? (treeItem[isOpen] ? 'expand_less' : 'expand_more') : 'spacer'), {
-                  onclick: () => toggle(),
-                }),
+                m(
+                  options._button(
+                    hasChildren()
+                      ? (isOpen && treeItem[isOpen]) || tiState.isOpen
+                        ? 'expand_less'
+                        : 'expand_more'
+                      : 'spacer'
+                  ),
+                  {
+                    onclick: () => toggle(),
+                  }
+                ),
                 m(
                   'span.tree-item-title',
                   { class: `${options.editable.canUpdate ? 'moveable' : ''}` },

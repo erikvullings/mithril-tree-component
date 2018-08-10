@@ -67,10 +67,41 @@ export const TreeView = () => {
     ...options,
     isOpen: undefined,
     editable: { canCreate: true, canDelete: true, canUpdate: true, canDeleteParent: false },
-  };
+  } as ITreeOptions;
+
+  const options5 = {
+    ...options,
+    isOpen: undefined,
+    editable: { canCreate: true, canDelete: true, canUpdate: true, canDeleteParent: false },
+    onBeforeDelete: ti => {
+      return new Promise<boolean>(resolve => {
+        setTimeout(() => {
+          console.log(`On before delete ${ti.title}`);
+          resolve(true);
+        }, 3000);
+      });
+    },
+    onBeforeCreate: ti => {
+      return new Promise<boolean>(resolve => {
+        setTimeout(() => {
+          console.log(`On before create ${ti.title}`);
+          resolve(true);
+        }, 3000);
+      });
+    },
+    onDelete: ti => {
+      console.log(`On delete ${ti.title}`);
+      m.redraw(); // As the delete action is done async, force a redraw when done.
+    },
+    onCreate: ti => {
+      console.log(`On create ${ti.title}`);
+      m.redraw(); // As the delete action is done async, force a redraw when done.
+    },
+  } as ITreeOptions;
 
   return {
     view: () =>
+      console.log('Drawing the view...') ||
       m('.row', [
         m('.col.s6', [
           m('h3', 'Readonly'),
@@ -81,6 +112,8 @@ export const TreeView = () => {
           m(TreeContainer, { tree, options: options3 }),
           m('h3', 'CRUD, isOpen undefined'),
           m(TreeContainer, { tree, options: options4 }),
+          m('h3', 'CRUD, async. create and delete'),
+          m(TreeContainer, { tree, options: options5 }),
         ]),
         m('.col.s6', [m('h3', 'Tree data'), m('pre', m('code', JSON.stringify(tree, null, 2)))]),
       ]),
