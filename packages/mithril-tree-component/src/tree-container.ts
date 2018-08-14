@@ -16,8 +16,8 @@ export let log: (...args: any[]) => void = () => undefined;
 export const TreeContainer = <T extends ITreeItem[]>({
   attrs,
 }: Vnode<{ tree: T; options?: Partial<ITreeOptions> }>): Component<{ tree: T; options?: Partial<ITreeOptions> }> => {
-  const tree = attrs.tree;
-  const state: ITreeState = {
+  const state: ITreeState<T> = {
+    tree: attrs.tree,
     selectedId: '',
     dragId: '',
   };
@@ -41,10 +41,14 @@ export const TreeContainer = <T extends ITreeItem[]>({
         }
       }
       const r = defaultFn(treeItem, action, newParent);
-      if (typeof r === 'function') { await r; }
+      if (typeof r === 'function') {
+        await r;
+      }
       if (afterFn) {
         const after = afterFn(treeItem, action, newParent);
-        if (typeof after === 'function') { await after; }
+        if (typeof after === 'function') {
+          await after;
+        }
       }
     };
     const defaultOptions = {
@@ -108,7 +112,7 @@ export const TreeContainer = <T extends ITreeItem[]>({
     };
 
     /** Recursively find a tree item */
-    const find = (tId: string | number = '', partialTree: T = tree) => {
+    const find = (tId: string | number = '', partialTree: T = state.tree) => {
       if (!tId) {
         return undefined;
       }
@@ -125,7 +129,7 @@ export const TreeContainer = <T extends ITreeItem[]>({
     };
 
     /** Recursively delete a tree item and all its children */
-    const deleteTreeItem = (tId: string | number = '', partialTree: T = tree) => {
+    const deleteTreeItem = (tId: string | number = '', partialTree: T = state.tree) => {
       if (!tId) {
         return false;
       }
@@ -149,7 +153,7 @@ export const TreeContainer = <T extends ITreeItem[]>({
     };
 
     /** Recursively delete a tree item and all its children */
-    const updateTreeItem = (updatedTreeItem: ITreeItem, partialTree: T = tree) => {
+    const updateTreeItem = (updatedTreeItem: ITreeItem, partialTree: T = state.tree) => {
       let found = false;
       partialTree.some((treeItem, i) => {
         if (treeItem[id] === updatedTreeItem[id]) {
@@ -190,7 +194,7 @@ export const TreeContainer = <T extends ITreeItem[]>({
             parent[isOpen] = true;
           }
         } else {
-          tree.push(ti);
+          state.tree.push(ti);
         }
       },
       opts.onBeforeCreate,
@@ -247,14 +251,14 @@ export const TreeContainer = <T extends ITreeItem[]>({
             opts.onUpdate(tiSource, 'move', tiTarget);
           }
         } else if (tiSource) {
-          if (opts.onBeforeUpdate && opts.onBeforeUpdate(tiSource, 'move', tree) === false) {
+          if (opts.onBeforeUpdate && opts.onBeforeUpdate(tiSource, 'move', state.tree) === false) {
             return false;
           }
           deleteTreeItem(sourceId);
           tiSource[parentId] = undefined;
-          tree.push(tiSource);
+          state.tree.push(tiSource);
           if (opts.onUpdate) {
-            opts.onUpdate(tiSource, 'move', tree);
+            opts.onUpdate(tiSource, 'move', state.tree);
           }
         }
       },
@@ -299,12 +303,13 @@ export const TreeContainer = <T extends ITreeItem[]>({
     el.id ? el.id : el.parentElement ? findId(el.parentElement) : null;
 
   return {
-    view: () =>
-      m(
+    view: vnode => {
+      state.tree = vnode.attrs.tree;
+      return m(
         `.tree-container[draggable=${options.editable.canUpdate}]`,
         { ...dragOptions },
         m('ul', [
-          ...tree.map(item => m(TreeItem, { item, options, dragOptions, state, key: item[options.id] })),
+          ...state.tree.map(item => m(TreeItem, { item, options, dragOptions, state, key: item[options.id] })),
           m(
             'li',
             m(
@@ -315,6 +320,7 @@ export const TreeContainer = <T extends ITreeItem[]>({
             )
           ),
         ])
-      ),
+      );
+    },
   } as Component<{ tree: T; options?: Partial<ITreeOptions> }>;
 };

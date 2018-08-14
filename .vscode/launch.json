@@ -1,0 +1,20 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome against localhost",
+      "url": "http://localhost:62608",
+      "webRoot": "${workspaceFolder}/packages/example/dist",
+      "skipFiles": ["jquery.js"],
+      "smartStep": true,
+      "sourceMapPathOverrides": {
+        "../node_modules/mithril-tree-component/dist/*": "${webRoot}/../../mithril-tree-component/dist/*"
+      }
+    }
+  ]
+}
