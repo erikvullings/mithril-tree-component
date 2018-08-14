@@ -5,14 +5,16 @@ import { ITreeState } from './models/tree-state';
 
 export const TreeItemIdPrefix = 'tree-item-';
 
-interface ITreeItemAttributes {
+interface ITreeItemAttributes<T extends ITreeItem[]> {
   item: ITreeItem;
   options: IInternalTreeOptions;
-  state: ITreeState;
+  state: ITreeState<T>;
   dragOptions: Attributes;
 }
 
-export const TreeItem = ({ attrs }: Vnode<ITreeItemAttributes>): Component<ITreeItemAttributes> => {
+export const TreeItem = <T extends ITreeItem[]>({
+  attrs,
+}: Vnode<ITreeItemAttributes<T>>): Component<ITreeItemAttributes<T>> => {
   const options = attrs.options;
   const dragOptions = attrs.dragOptions;
   const state = attrs.state;
