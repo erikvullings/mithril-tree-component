@@ -24,10 +24,9 @@ export const TreeItem = <T extends ITreeItem[]>({
   const isOpen = options.isOpen;
   const treeItemView = options.treeItemView;
 
-  const treeItem = attrs.item;
-  const hasChildren = () => treeItem[children] && treeItem[children].length;
-  const toggle = () => {
-    if (hasChildren()) {
+  const hasChildren = (treeItem: ITreeItem) => treeItem[children] && treeItem[children].length;
+  const toggle = (treeItem: ITreeItem) => {
+    if (hasChildren(treeItem)) {
       if (isOpen) {
         treeItem[isOpen] = !treeItem[isOpen];
       } else {
@@ -36,8 +35,8 @@ export const TreeItem = <T extends ITreeItem[]>({
     }
   };
 
-  const addChildren = () => {
-    if (!hasChildren()) {
+  const addChildren = (treeItem: ITreeItem) => {
+    if (!hasChildren(treeItem)) {
       treeItem[children] = [];
       if (isOpen) {
         treeItem[isOpen] = true;
@@ -47,20 +46,21 @@ export const TreeItem = <T extends ITreeItem[]>({
   };
 
   /** Compute the current depth of a (perhaps moved) tree item, where 0 is root, 1 is child, etc. */
-  const depth = (ti = treeItem, curDepth = 0): number => {
-    const pId = ti[parentId];
+  const depth = (treeItem: ITreeItem, curDepth = 0): number => {
+    const pId = treeItem[parentId];
     return pId ? depth(options._find(pId) as ITreeItem, curDepth + 1) : curDepth;
   };
 
-  const isExpanded = () => hasChildren() && ((isOpen && treeItem[isOpen]) || tiState.isOpen);
+  const isExpanded = (treeItem: ITreeItem) => hasChildren(treeItem) && ((isOpen && treeItem[isOpen]) || tiState.isOpen);
 
   const tiState = {
     isOpen: false,
   };
 
   return {
-    view: () =>
-      m(`li[id=${TreeItemIdPrefix}${treeItem[id]}][draggable=${options.editable.canUpdate}]`, dragOptions, [
+    view: (vnode) => {
+      const treeItem = vnode.attrs.item;
+      return m(`li[id=${TreeItemIdPrefix}${treeItem[id]}][draggable=${options.editable.canUpdate}]`, dragOptions, [
         m(
           '.tree-item',
           {
@@ -78,32 +78,32 @@ export const TreeItem = <T extends ITreeItem[]>({
               [
                 m(
                   options._button(
-                    hasChildren()
+                    hasChildren(treeItem)
                       ? (isOpen && treeItem[isOpen]) || tiState.isOpen
                         ? 'expand_less'
                         : 'expand_more'
                       : 'spacer'
                   ),
                   {
-                    onclick: () => toggle(),
+                    onclick: () => toggle(treeItem),
                   }
                 ),
                 m(
                   'span.tree-item-title',
                   { class: `${options.editable.canUpdate ? 'moveable' : ''}` },
-                  m(treeItemView, { treeItem, depth: depth() })
+                  m(treeItemView, { treeItem, depth: depth(treeItem) })
                 ),
               ],
               m('.act-group', [
-                options.editable.canCreate && !hasChildren() && depth() < options.maxDepth
-                  ? m(options._button('add_children'), { onclick: () => addChildren() })
+                options.editable.canCreate && !hasChildren(treeItem) && depth(treeItem) < options.maxDepth
+                  ? m(options._button('add_children'), { onclick: () => addChildren(treeItem) })
                   : '',
-                options.editable.canDelete && (options.editable.canDeleteParent || !hasChildren())
+                options.editable.canDelete && (options.editable.canDeleteParent || !hasChildren(treeItem))
                   ? m(options._button('delete'), { onclick: () => options.onDelete(treeItem) })
                   : '',
               ])
             ),
-            isExpanded()
+            isExpanded(treeItem)
               ? m('ul.tree-item-body', [
                   ...treeItem.children.map((item: ITreeItem) =>
                     m(TreeItem, {
@@ -124,6 +124,7 @@ export const TreeItem = <T extends ITreeItem[]>({
               : '',
           ]
         ),
-      ]),
+      ]);
+    },
   };
 };

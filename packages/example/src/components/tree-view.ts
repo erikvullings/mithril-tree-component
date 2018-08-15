@@ -100,9 +100,9 @@ export const TreeView = () => {
   } as ITreeOptions;
 
   return {
-    view: () =>
-      console.log('Drawing the view...') ||
-      m('.row', [
+    view: () => {
+      // console.log('Drawing the view...');
+      return m('.row', [
         m('.col.s6', [
           m('h3', 'Readonly'),
           m(TreeContainer, { tree, options }),
@@ -115,7 +115,23 @@ export const TreeView = () => {
           m('h3', 'CRUD, async. create and delete'),
           m(TreeContainer, { tree, options: options5 }),
         ]),
-        m('.col.s6', [m('h3', 'Tree data'), m('pre', m('code', JSON.stringify(tree, null, 2)))]),
-      ]),
+        m('.col.s6', [
+          m(
+            'button.waves-effect.waves-light.btn',
+            {
+              onclick: () => {
+                setTimeout(() => {
+                  data[0].title = `Updated at ${new Date().toTimeString()}`;
+                  m.redraw();
+                }, 1000);
+              },
+            },
+            'Update first node with timeout'
+          ),
+          m('h3', 'Tree data'),
+          m('pre', m('code', JSON.stringify(tree, null, 2))),
+        ]),
+      ]);
+    },
   };
 };

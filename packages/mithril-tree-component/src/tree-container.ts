@@ -265,12 +265,14 @@ export const TreeContainer = <T extends ITreeItem[]>({
       ondragover: (ev: any) => {
         const sourceId = state.dragId;
         const targetId = findId(ev.target) || '';
+        ev.redraw = false;
         if (sourceId !== targetId) {
           ev.preventDefault();
         }
       },
       ondragstart: (ev: DragEvent) => {
         const target = ev.target;
+        (ev as any).redraw = false;
         if (target) {
           ev.dataTransfer.setData('text', (target as any).id);
           ev.dataTransfer.effectAllowed = 'move';
