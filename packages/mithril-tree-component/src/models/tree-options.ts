@@ -53,10 +53,10 @@ export interface ITreeOptions {
   /** When a tree item has been updated, this function is invoked */
   onUpdate: (treeItem: ITreeItem, action?: TreeItemUpdateAction, newParent?: ITreeItem) => void | Promise<void>;
   /**
-   * Factory function that can be used to create new items.
+   * Factory function that can be used to create new items. If there is no parent, the depth is -1.
    * If parent treeItem is missing, a root item should be created.
    */
-  create: (parent?: ITreeItem) => ITreeItem | Promise<ITreeItem>;
+  create: (parent?: ITreeItem, depth?: number) => ITreeItem | Promise<ITreeItem>;
   /** Does the tree support editing, e.g. creating, deleting or updating. */
   editable: Partial<{
     /** Allow creating of new items. */

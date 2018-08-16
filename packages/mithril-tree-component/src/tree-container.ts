@@ -167,11 +167,18 @@ export const TreeContainer = <T extends ITreeItem[]>({
       return found;
     };
 
+    const depth = (treeItem: ITreeItem, curDepth = 0): number => {
+      const pId = treeItem[parentId];
+      return pId ? depth(find(pId) as ITreeItem, curDepth + 1) : curDepth;
+    };
+
     /** Create a new tree item. */
     const createTreeItem = (pId: string | number = '') => {
       const create = () => {
         if (options.create) {
-          return options.create(find(pId));
+          const parent = find(pId);
+          const d = parent ? depth(parent) : -1;
+          return options.create(parent, d);
         }
         const item = {} as ITreeItem;
         item[id] = uuid4();
