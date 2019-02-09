@@ -1,5 +1,6 @@
 {
   "name": "mithril-tree-component-example",
+  "private": true,
   "version": "0.0.1",
   "description": "Example project, showing how to use the Mitrhil tree component.",
   "main": "index.js",
@@ -25,15 +26,14 @@
   },
   "homepage": "https://github.com/erikvullings/mithril-tree-component#readme",
   "dependencies": {
-    "materialize-css": "^0.100.2",
-    "mithril": "^1.1.6",
-    "mithril-tree-component": "^0.3.2"
+    "materialize-css": "^1.0.0",
+    "mithril": "^2.0.0-rc.4",
+    "mithril-tree-component": "^0.3.6"
   },
   "devDependencies": {
-    "@types/mithril": "^1.1.12",
-    "autoprefixer": "^9.1.0",
-    "parcel-bundler": "^1.9.7",
-    "parcel-plugin-typescript": "^1.0.0",
-    "typescript": "^3.0.1"
+    "@types/mithril": "^1.1.15",
+    "autoprefixer": "^9.4.7",
+    "parcel-bundler": "^1.11.0",
+    "typescript": "^3.3.3"
   }
 }
