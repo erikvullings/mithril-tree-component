@@ -24,7 +24,8 @@
     "clean": "lerna run --parallel clean",
     "start": "lerna run --parallel start",
     "deploy": "lerna run --parallel deploy",
-    "publish": "lerna publish --force-publish=*"
+    "patch-release": "lerna run patch-release",
+    "minor-release": "lerna run minor-release"
   },
   "devDependencies": {
     "lerna": "^3.0.0-rc.0"
