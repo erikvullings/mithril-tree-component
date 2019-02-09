@@ -25,4 +25,4 @@ var e=arguments[3];!function(){"use strict";function t(e,t,n,r,o,i){return{tag:e
 },{"mithril":"lxlU"}],"+YSF":[function(require,module,exports) {
 "use strict";var e=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(exports,"__esModule",{value:!0}),require("materialize-css/dist/css/materialize.min.css"),require("./styles.css");var r=e(require("mithril")),t=require("./components/tree-view"),i=require("./components/layout"),u={"/":{render:function(){return r.default(i.Layout,r.default(t.TreeView))}}};r.default.route(document.body,"/",u);
 },{"materialize-css/dist/css/materialize.min.css":"oaoG","./styles.css":"oaoG","mithril":"lxlU","./components/tree-view":"3FMz","./components/layout":"DqVK"}]},{},["+YSF"], null)
-//# sourceMappingURL=/app.68286057.map
+//# sourceMappingURL=https://erikvullings.github.io/mithril-tree-component/app.68286057.map
