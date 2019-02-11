@@ -1,5 +1,5 @@
 import { Component, Attributes } from 'mithril';
-import { ITreeItem } from './tree-item';
+import { ITreeItem } from '.';
 
 /** Indicates the type of action is performed on the tree item. */
 export type TreeItemAction = 'create' | 'delete' | 'add_children' | 'expand_more' | 'expand_less' | 'spacer';
@@ -13,6 +13,7 @@ export interface ITreeItemViewComponent {
 }
 
 export interface ITreeOptions {
+  tree: ITreeItem[];
   /** If provided, this component is used to display the tree item. */
   treeItemView: Component<ITreeItemViewComponent>;
   /** Name of the name property, e.g. how the tree item is displayed in the tree (default 'name') */
@@ -76,11 +77,13 @@ export interface ITreeOptions {
 }
 
 export interface IInternalTreeOptions extends ITreeOptions {
-  /** Internal function: creates a button either using the button component, or a simple text node */
-  _button: (name: TreeItemAction) => Component<Attributes>;
   /** Internal function: retrieves the tree item based on its id */
   _find: (id: string | number) => ITreeItem | undefined;
   /** Internal function: creates a sibling tree item  */
   _createItem: (siblingId?: string | number) => void;
   _deleteItem: (id?: string | number) => void;
+  _hasChildren: (treeItem: ITreeItem) => boolean;
+  _addChildren: (treeItem: ITreeItem) => void;
+  _depth: (treeItem: ITreeItem, curDepth?: number) => number;
+  _isExpanded: (treeItem: ITreeItem, isOpened: boolean) => boolean;
 }

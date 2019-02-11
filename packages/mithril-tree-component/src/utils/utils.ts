@@ -1,3 +1,6 @@
+import m, { FactoryComponent, Attributes } from 'mithril';
+import { TreeItemAction } from '..';
+
 /**
  * Create a GUID
  * @see https://stackoverflow.com/a/2117523/319711
@@ -12,4 +15,40 @@ export const uuid4 = () => {
     const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
+};
+
+export interface ITreeButtonOptions extends Attributes {
+  buttonName: TreeItemAction;
+}
+
+export const TreeButton: FactoryComponent<ITreeButtonOptions> = () => {
+  const textSymbol = (buttonName: string) => {
+    switch (buttonName) {
+      case 'add_children':
+      case 'create':
+        return '✚';
+      case 'delete':
+        return '✖';
+      case 'expand_more':
+        return '►';
+      case 'expand_less':
+        return '◢';
+      case 'spacer':
+        return '';
+    }
+  };
+  const classNames = (buttonName: string) => {
+    switch (buttonName) {
+      case 'expand_more':
+      case 'expand_less':
+        return 'span.clickable.collapse-expand-item';
+      case 'spacer':
+        return 'span.spacer';
+      default:
+        return '.act';
+    }
+  };
+  return {
+    view: ({ attrs }) => m(`${classNames(attrs.buttonName)}`, attrs, textSymbol(attrs.buttonName)),
+  };
 };

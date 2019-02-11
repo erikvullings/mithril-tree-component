@@ -1,4 +1,4 @@
-import m, { Vnode, Component } from 'mithril';
+import m, { Component } from 'mithril';
 import { unflatten } from '../utils';
 import { TreeContainer, ITreeOptions, ITreeItem, uuid4, ITreeItemViewComponent } from 'mithril-tree-component';
 
@@ -39,10 +39,10 @@ export const TreeView = () => {
         item.parentId = parent.id;
       }
       item.title = `Created at ${new Date().toLocaleTimeString()}`;
-      return item as ITreeItem;
+      return item as IMyTree;
     },
     editable: { canCreate: false, canDelete: false, canUpdate: false, canDeleteParent: false },
-  } as ITreeOptions;
+  } as Partial<ITreeOptions>;
 
   const options2 = {
     ...options,
@@ -53,7 +53,7 @@ export const TreeView = () => {
     ...options,
     maxDepth: 3,
     treeItemView: {
-      view: ({ attrs }: Vnode<ITreeItemViewComponent>) =>
+      view: ({ attrs }) =>
         m(
           'div',
           { style: 'display: inline-block; vertical-align: middle; line-height: 1.5rem;' },
