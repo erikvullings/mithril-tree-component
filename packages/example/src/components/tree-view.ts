@@ -1,5 +1,4 @@
 import m, { Component } from 'mithril';
-import { unflatten } from '../utils';
 import { TreeContainer, ITreeOptions, ITreeItem, uuid4, ITreeItemViewComponent } from 'mithril-tree-component';
 
 interface IMyTree extends ITreeItem {
@@ -19,7 +18,6 @@ export const TreeView = () => {
     { id: 7, parentId: 4, title: 'My id is 7', description: 'Description of item 7.' },
   ];
   const tree = data;
-  // const tree = unflatten(data);
   const options = {
     id: 'id',
     parentId: 'parentId',

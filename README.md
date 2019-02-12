@@ -5,23 +5,24 @@ A tree component for [Mithril](https://mithril.js.org) that supports drag-and-dr
 ![Mithril-tree-component animation](./packages/mithril-tree-component/img/mithril-tree-component-animation.gif)
 
 **Functionality:**
-- Drag-and-drop to move items (if editable.canUpdate is true).
-- Create and delete tree items (if editable.canDelete and editable.canDeleteParent is true).
+
+- Drag-and-drop to move items (if `editable.canUpdate` is true).
+- Create and delete tree items (if `editable.canDelete` and `editable.canDeleteParent` is true).
 - Configurable properties for:
-  - id property: unique id of the item.
-  - parentId property: id of the parent.
-  - name property: display title. Alternatively, provide your own component.
-  - children property: id of the property used for child tree nodes.
-  - maxDepth: when specified, and editable.canCreate is true, do not add children that would exceed this depth, where depth is 0 for root items, 1 for children, etc.
-  - isOpen: to indicate whether the tree should show the children. If not provided, the open/close state is maintained internally. This slightly affects the behaviour of the tree, e.g. after creating items, the parent is not automatically opened.
-  - create: can be used to add your own TreeItem creation logic.
+  - `id` property: unique id of the item.
+  - `parentId` property: id of the parent.
+  - `name` property: display title. Alternatively, provide your own component.
+  - `maxDepth`: when specified, and editable.canCreate is true, do not add children that would exceed this depth, where depth is 0 for root items, 1 for children, etc.
+  - `isOpen`: to indicate whether the tree should show the children. If not provided, the open/close state is maintained internally. This slightly affects the behaviour of the tree, e.g. after creating items, the parent is not automatically opened.
+  - `create`: can be used to add your own TreeItem creation logic.
 - Callback events:
-  - onSelect: when a tree item is selected.
-  - onBefore[Create | Update | Delete]: can be used to intercept (and block) tree item actions. If the onBeforeX call returns false, the action is stopped.
-  - on[Create | Update | Delete]: when the creation is done.
-  - When using async functions or promises, please make sure to call m.redraw() when you are done.
+  - `onSelect`: when a tree item is selected.
+  - `onBefore`[Create | Update | Delete]: can be used to intercept (and block) tree item actions. If the onBeforeX call returns false, the action is stopped.
+  - `on[Create | Update | Delete]`: when the creation is done.
+  - When using async functions or promises, please make sure to call `m.redraw()` when you are done.
 
 This repository contains two projects:
+
 - An example project, showcasing the usage of the component.
 - The mithril-tree-component itself.
 

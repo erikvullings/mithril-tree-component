@@ -37,7 +37,6 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
     },
     view: ({ attrs }) => {
       const { item, options, dragOptions, selectedId } = attrs;
-      console.warn(`Selected id: ${selectedId} of item ${item.title}`);
       const {
         id,
         isOpen,

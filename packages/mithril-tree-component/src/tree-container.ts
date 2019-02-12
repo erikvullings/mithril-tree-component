@@ -2,7 +2,7 @@ import m, { FactoryComponent, Attributes } from 'mithril';
 import { TreeItem, TreeItemIdPrefix } from './tree-item';
 import { IInternalTreeOptions } from './models/tree-options';
 import { ITreeItem, ITreeOptions, TreeItemUpdateAction } from './models';
-import { uuid4, TreeButton } from './utils';
+import { uuid4, TreeButton, move } from './utils';
 import { ITreeState } from './models/tree-state';
 
 export let log: (...args: any[]) => void = () => undefined;
@@ -72,8 +72,6 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
           return true;
         }
         return false;
-        // found = treeItem[children] ? find(tId, treeItem[children]) : undefined;
-        // return found ? true : false;
       });
       return found;
     };
@@ -92,14 +90,6 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
           return true;
         }
         return false;
-        // found = treeItem[children] ? deleteTreeItem(tId, treeItem[children]) : false;
-        // if (found && treeItem[children].length === 0) {
-        //   delete treeItem[children];
-        //   if (opts.isOpen) {
-        //     delete treeItem[opts.isOpen];
-        //   }
-        // }
-        // return found;
       });
       return found;
     };
@@ -116,7 +106,6 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
           found = true;
           return true;
         }
-        // found = treeItem[children] ? updateTreeItem(updatedTreeItem, treeItem[children]) : false;
         return false;
       });
       return found;
@@ -132,23 +121,10 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
         if (state.tree) {
           state.tree.push(ti);
         }
-        // const parent = find(ti[parentId]);
-        // if (parent) {
-        //   if (!(parent[children] instanceof Array)) {
-        //     parent[children] = [];
-        //   }
-        //   parent[children].push(ti);
-        //   if (isOpen) {
-        //     parent[isOpen] = true;
-        //   }
-        // } else if (state.tree) {
-        //   state.tree.push(ti);
-        // }
       },
       opts.onBeforeCreate,
       (treeItem: ITreeItem) => {
         onSelect(treeItem, true);
-        // state.selectedId = treeItem[id];
         opts.onCreate(treeItem);
       }
     );
@@ -205,12 +181,11 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
           if (opts.onBeforeUpdate && opts.onBeforeUpdate(tiSource, 'move', tiTarget) === false) {
             return false;
           }
-          deleteTreeItem(sourceId);
           tiSource[parentId] = tiTarget[id];
-          // if (!tiTarget[children]) {
-          //   tiTarget[children] = [];
-          // }
-          // tiTarget[children].push(tiSource);
+          if (state.tree) {
+            const index = state.tree && state.tree.indexOf(tiSource);
+            move(state.tree, index, state.tree.length - 1);
+          }
           if (isOpen) {
             tiTarget[isOpen] = true;
           }
@@ -221,10 +196,10 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
           if (opts.onBeforeUpdate && opts.onBeforeUpdate(tiSource, 'move', tiTarget) === false) {
             return false;
           }
-          deleteTreeItem(sourceId);
           tiSource[parentId] = undefined;
           if (state.tree) {
-            state.tree.push(tiSource);
+            const index = state.tree && state.tree.indexOf(tiSource);
+            move(state.tree, index, state.tree.length - 1);
           }
           if (opts.onUpdate) {
             opts.onUpdate(tiSource, 'move', tiTarget);

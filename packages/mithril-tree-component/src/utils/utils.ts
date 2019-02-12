@@ -17,6 +17,11 @@ export const uuid4 = () => {
   });
 };
 
+/** Move an item in an array from index to another index */
+export const move = <T>(arr: T[], from: number, to: number) => arr
+  ? arr.splice(to, 0, arr.splice(from, 1)[0])
+  : undefined;
+
 export interface ITreeButtonOptions extends Attributes {
   buttonName: TreeItemAction;
 }
