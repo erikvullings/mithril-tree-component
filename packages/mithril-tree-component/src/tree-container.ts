@@ -46,7 +46,6 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
     const opts = {
       id: 'id',
       parentId: 'parentId',
-      children: 'children',
       name: 'name',
       isOpen: 'isOpen',
       maxDepth: Number.MAX_SAFE_INTEGER,
@@ -59,7 +58,7 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
     if (opts.logging) {
       log = console.log;
     }
-    const { id, parentId, name, children, isOpen } = opts;
+    const { id, parentId, name, isOpen } = opts;
 
     /** Recursively find a tree item */
     const find = (tId: string | number = '', partialTree = state.tree) => {
@@ -72,8 +71,9 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
           found = treeItem;
           return true;
         }
-        found = treeItem[children] ? find(tId, treeItem[children]) : undefined;
-        return found ? true : false;
+        return false;
+        // found = treeItem[children] ? find(tId, treeItem[children]) : undefined;
+        // return found ? true : false;
       });
       return found;
     };
@@ -87,17 +87,19 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       partialTree.some((treeItem, i) => {
         if (treeItem[id] === tId) {
           partialTree.splice(i, 1);
+          findChildren(treeItem).forEach(ti => deleteTreeItem(ti[id]));
           found = true;
           return true;
         }
-        found = treeItem[children] ? deleteTreeItem(tId, treeItem[children]) : false;
-        if (found && treeItem[children].length === 0) {
-          delete treeItem[children];
-          if (opts.isOpen) {
-            delete treeItem[opts.isOpen];
-          }
-        }
-        return found;
+        return false;
+        // found = treeItem[children] ? deleteTreeItem(tId, treeItem[children]) : false;
+        // if (found && treeItem[children].length === 0) {
+        //   delete treeItem[children];
+        //   if (opts.isOpen) {
+        //     delete treeItem[opts.isOpen];
+        //   }
+        // }
+        // return found;
       });
       return found;
     };
@@ -114,8 +116,8 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
           found = true;
           return true;
         }
-        found = treeItem[children] ? updateTreeItem(updatedTreeItem, treeItem[children]) : false;
-        return found;
+        // found = treeItem[children] ? updateTreeItem(updatedTreeItem, treeItem[children]) : false;
+        return false;
       });
       return found;
     };
@@ -127,21 +129,28 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
 
     const onCreate = wrapper(
       (ti: ITreeItem) => {
-        const parent = find(ti[parentId]);
-        if (parent) {
-          if (!(parent[children] instanceof Array)) {
-            parent[children] = [];
-          }
-          parent[children].push(ti);
-          if (isOpen) {
-            parent[isOpen] = true;
-          }
-        } else if (state.tree) {
+        if (state.tree) {
           state.tree.push(ti);
         }
+        // const parent = find(ti[parentId]);
+        // if (parent) {
+        //   if (!(parent[children] instanceof Array)) {
+        //     parent[children] = [];
+        //   }
+        //   parent[children].push(ti);
+        //   if (isOpen) {
+        //     parent[isOpen] = true;
+        //   }
+        // } else if (state.tree) {
+        //   state.tree.push(ti);
+        // }
       },
       opts.onBeforeCreate,
-      opts.onCreate
+      (treeItem: ITreeItem) => {
+        onSelect(treeItem, true);
+        // state.selectedId = treeItem[id];
+        opts.onCreate(treeItem);
+      }
     );
 
     /** Create a new tree item. */
@@ -198,10 +207,10 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
           }
           deleteTreeItem(sourceId);
           tiSource[parentId] = tiTarget[id];
-          if (!tiTarget[children]) {
-            tiTarget[children] = [];
-          }
-          tiTarget[children].push(tiSource);
+          // if (!tiTarget[children]) {
+          //   tiTarget[children] = [];
+          // }
+          // tiTarget[children].push(tiSource);
           if (isOpen) {
             tiTarget[isOpen] = true;
           }
@@ -242,20 +251,27 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       },
     } as Attributes;
 
-    const hasChildren = (treeItem: ITreeItem) => treeItem[children] && treeItem[children].length;
+    const hasChildren = (treeItem: ITreeItem) => state.tree && state.tree.some(ti => ti[parentId] === treeItem[id]);
+    // treeItem[children] && treeItem[children].length;
 
     const addChildren = (treeItem: ITreeItem) => {
-      if (!hasChildren(treeItem)) {
-        treeItem[children] = [];
-        if (isOpen) {
-          treeItem[isOpen] = true;
-        }
-        createTreeItem(treeItem[id]);
-      }
+      // if (!hasChildren(treeItem)) {
+      //   treeItem[children] = [];
+      //   if (isOpen) {
+      //     treeItem[isOpen] = true;
+      //   }
+      createTreeItem(treeItem[id]);
+      // }
     };
+
+    // const childIsSelected = (treeItem: ITreeItem) =>
+    //   state.selectedId && findChildren(treeItem).filter(ti => ti[id] === state.selectedId).length > 0;
 
     const isExpanded = (treeItem: ITreeItem, isOpened: boolean) =>
       hasChildren(treeItem) && ((isOpen && treeItem[isOpen]) || isOpened);
+
+    const findChildren = (treeItem: ITreeItem) =>
+      state.tree ? state.tree.filter(ti => ti[parentId] === treeItem[id]) : [];
 
     return {
       dragOptions: dragOpts,
@@ -266,6 +282,7 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
         onCreate,
         onDelete,
         onUpdate,
+        _findChildren: findChildren,
         _find: find,
         _deleteItem: deleteTreeItem,
         _createItem: createTreeItem,
@@ -289,6 +306,7 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
     },
     view: ({ attrs }) => {
       state.tree = attrs.tree;
+      const { parentId } = state.options;
       const { options, dragOptions } = state;
       if (!state.tree || !options || !dragOptions) {
         return undefined;
@@ -297,15 +315,17 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
         `.tree-container[draggable=${options.editable.canUpdate}]`,
         { ...dragOptions },
         m('ul', [
-          ...state.tree.map(item =>
-            m(TreeItem, {
-              item,
-              options,
-              dragOptions,
-              selectedId: state.selectedId,
-              key: item[options.id],
-            })
-          ),
+          ...state.tree
+            .filter(item => !item[parentId])
+            .map(item =>
+              m(TreeItem, {
+                item,
+                options,
+                dragOptions,
+                selectedId: state.selectedId,
+                key: item[options.id],
+              })
+            ),
           m(
             'li',
             m(

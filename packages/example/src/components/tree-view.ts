@@ -18,7 +18,8 @@ export const TreeView = () => {
     { id: 6, parentId: 0, title: 'My id is 6', description: 'Description of item 6.' },
     { id: 7, parentId: 4, title: 'My id is 7', description: 'Description of item 7.' },
   ];
-  const tree = unflatten(data);
+  const tree = data;
+  // const tree = unflatten(data);
   const options = {
     id: 'id',
     parentId: 'parentId',

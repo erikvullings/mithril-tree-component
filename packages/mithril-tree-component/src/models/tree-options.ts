@@ -22,8 +22,6 @@ export interface ITreeOptions {
   id: string;
   /** Name of the parent ID property (default 'parentId') */
   parentId: string;
-  /** Name of the children property (default 'children') */
-  children: string;
   /** Name of the open property, e.g. to display or hide the children (default 'isOpen') */
   isOpen: string | undefined;
   /**
@@ -79,6 +77,7 @@ export interface ITreeOptions {
 export interface IInternalTreeOptions extends ITreeOptions {
   /** Internal function: retrieves the tree item based on its id */
   _find: (id: string | number) => ITreeItem | undefined;
+  _findChildren: (treeItem: ITreeItem) => ITreeItem[];
   /** Internal function: creates a sibling tree item  */
   _createItem: (siblingId?: string | number) => void;
   _deleteItem: (id?: string | number) => void;

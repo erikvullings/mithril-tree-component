@@ -37,10 +37,12 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
     },
     view: ({ attrs }) => {
       const { item, options, dragOptions, selectedId } = attrs;
+      console.warn(`Selected id: ${selectedId} of item ${item.title}`);
       const {
         id,
         isOpen,
         treeItemView,
+        _findChildren,
         _isExpanded,
         _addChildren,
         _hasChildren,
@@ -84,7 +86,10 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
               ],
               m('.act-group', [
                 editable.canCreate && !_hasChildren(item) && _depth(item) < maxDepth
-                  ? m(TreeButton, { buttonName: 'add_children', onclick: () => _addChildren(item) })
+                  ? m(TreeButton, { buttonName: 'add_children', onclick: () =>  {
+                    _addChildren(item);
+                    tiState.isOpen = true;
+                  } })
                   : '',
                 editable.canDelete && (editable.canDeleteParent || !_hasChildren(item))
                   ? m(TreeButton, { buttonName: 'delete', onclick: () => onDelete(item) })
@@ -93,7 +98,8 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
             ),
             _isExpanded(item, tiState.isOpen)
               ? m('ul.tree-item-body', [
-                  ...item.children.map((i: ITreeItem) =>
+                // ...item[children].map((i: ITreeItem) =>
+                ..._findChildren(item).map((i: ITreeItem) =>
                     m(TreeItem, {
                       item: i,
                       options,
