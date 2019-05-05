@@ -4,6 +4,10 @@ import sourceMaps from 'rollup-plugin-sourcemaps';
 import typescript from 'rollup-plugin-typescript2';
 import postcss from 'rollup-plugin-postcss';
 import json from 'rollup-plugin-json';
+import simplevars from 'postcss-simple-vars';
+import nested from 'postcss-nested';
+import cssnext from 'postcss-cssnext';
+import cssnano from 'cssnano';
 import { terser } from 'rollup-plugin-terser';
 
 const pkg = require('./package.json');
@@ -11,6 +15,8 @@ const pkg = require('./package.json');
 export default {
   input: `src/index.ts`,
   watch: 'src/**',
+  context: 'null',
+  moduleContext: 'null',
   output: [
     {
       file: pkg.module,
@@ -36,7 +42,10 @@ export default {
   plugins: [
     // Allow json resolution
     json(),
-    postcss(),
+    postcss({
+      extensions: ['.css'],
+      plugins: [simplevars(), nested(), cssnext({ warnForDuplicates: false }), cssnano()],
+    }),
     // Compile TypeScript files
     typescript({
       rollupCommonJSResolveHack: true,
