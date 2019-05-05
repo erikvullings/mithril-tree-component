@@ -27,7 +27,7 @@ export interface ITreeButtonOptions extends Attributes {
 }
 
 export const TreeButton: FactoryComponent<ITreeButtonOptions> = () => {
-  const textSymbol = (buttonName: string) => {
+  const textSymbol = (buttonName: TreeItemAction) => {
     switch (buttonName) {
       case 'add_children':
       case 'create':
@@ -35,25 +35,21 @@ export const TreeButton: FactoryComponent<ITreeButtonOptions> = () => {
       case 'delete':
         return '✖';
       case 'expand_more':
-        return '►';
+        return '▶';
       case 'expand_less':
         return '◢';
-      case 'spacer':
-        return '';
     }
   };
-  const classNames = (buttonName: string) => {
+  const classNames = (buttonName: TreeItemAction) => {
     switch (buttonName) {
       case 'expand_more':
       case 'expand_less':
         return 'span.clickable.collapse-expand-item';
-      case 'spacer':
-        return 'span.spacer';
       default:
         return '.act';
     }
   };
   return {
-    view: ({ attrs }) => m(`${classNames(attrs.buttonName)}`, attrs, textSymbol(attrs.buttonName)),
+    view: ({ attrs: { buttonName, ...params } }) => m(`${classNames(buttonName)}`, params, textSymbol(buttonName)),
   };
 };
