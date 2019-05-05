@@ -34,8 +34,8 @@
   margin: 0 10px;
 }
 
-.spacer {
-  margin: 0 17px;
+.tree-item-no-children {
+  margin-left: 34px;
 }
 
 .indent {
@@ -76,10 +76,12 @@
   opacity: 0;
   transition: visibility 0s, opacity 0.5s linear;
   float: right;
+  display: none;
 }
 .tree-item-header:hover .act-group {
   visibility: visible;
   opacity: 1;
+  display: inline-block;
 }
 
 .act {
@@ -88,7 +90,6 @@
   display: inline-block;
   padding: 0 0.3rem;
 }
-
 .act:hover {
   background: #e0e0e0;
 }
@@ -97,15 +98,21 @@
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s, opacity 0.5s linear;
+  display: none;
 }
 
 .tree-item:hover .act {
   visibility: visible;
   opacity: 1;
+  display: inline-block;
 }
 
 ul.tree-item-body {
-  padding-left: 1.7rem;
+  padding-left: 0.8rem;
+}
+
+ul.tree-item-body > li {
+  white-space: nowrap;
 }
 
 span.tree-item-title {
