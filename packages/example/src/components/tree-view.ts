@@ -12,7 +12,7 @@ export const TreeView = () => {
     { id: 1, parentId: 0, title: 'My id is 1', description: 'Description of item 1.' },
     { id: 2, parentId: 1, title: 'My id is 2', description: 'Description of item 2.' },
     { id: 3, parentId: 1, title: 'My id is 3', description: 'Description of item 3.' },
-    { id: 4, parentId: 2, title: 'My id is 4', description: 'Description of item 4.' },
+    { id: 4, parentId: 2, title: 'My very very very very very long id is 4', description: 'Description of item 4.' },
     { id: 5, parentId: 0, title: 'My id is 5', description: 'Description of item 5.' },
     { id: 6, parentId: 0, title: 'My id is 6', description: 'Description of item 6.' },
     { id: 7, parentId: 4, title: 'My id is 7', description: 'Description of item 7.' },
@@ -55,7 +55,10 @@ export const TreeView = () => {
       view: ({ attrs }) =>
         m(
           'div',
-          { style: 'display: inline-block; vertical-align: middle; line-height: 1.5rem;' },
+          {
+            style:
+              'display: inline-block; vertical-align: middle; line-height: 1.5rem; white-space: nowrap; text-overflow: ellipsis;',
+          },
           m('div', { style: 'font-weight: bold;' }, `Depth ${attrs.depth}: ${attrs.treeItem.title}`),
           m('div', { style: 'font-style: italic;' }, attrs.treeItem.description || '...')
         ),
