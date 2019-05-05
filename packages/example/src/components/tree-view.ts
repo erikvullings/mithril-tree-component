@@ -57,8 +57,7 @@ export const TreeView = () => {
         m(
           'div',
           {
-            style:
-              'display: inline-block; vertical-align: middle; line-height: 1.5rem; white-space: nowrap; text-overflow: ellipsis;',
+            style: 'display: inline-block; vertical-align: middle; line-height: 1.5rem; white-space: nowrap;',
           },
           m('div', { style: 'font-weight: bold;' }, `Depth ${attrs.depth}: ${attrs.treeItem.title}`),
           m('div', { style: 'font-style: italic;' }, attrs.treeItem.description || '...')
