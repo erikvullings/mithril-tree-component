@@ -1,7 +1,7 @@
 import m, { FactoryComponent, Attributes } from 'mithril';
 import { ITreeItem } from './models';
 import { IInternalTreeOptions } from './models/tree-options';
-import { TreeButton } from '.';
+import { TreeButton } from './utils';
 
 export const TreeItemIdPrefix = 'tree-item-';
 
@@ -53,6 +53,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
         maxDepth,
       } = options;
       const { toggle } = tiState;
+      const hasChildren = _hasChildren(item);
       return m(`li[id=${TreeItemIdPrefix}${item[id]}][draggable=${options.editable.canUpdate}]`, dragOptions, [
         m(
           '.tree-item',
@@ -69,26 +70,27 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                 class: `${selectedId === item[id] ? 'active' : ''}`,
               },
               [
-                m(TreeButton, {
-                  buttonName: _hasChildren(item)
-                    ? (isOpen && item[isOpen]) || tiState.isOpen
-                      ? 'expand_less'
-                      : 'expand_more'
-                    : 'spacer',
-                  onclick: () => toggle(item),
-                }),
+                hasChildren
+                  ? m(TreeButton, {
+                      buttonName: (isOpen && item[isOpen]) || tiState.isOpen ? 'expand_less' : 'expand_more',
+                      onclick: () => toggle(item),
+                    })
+                  : undefined,
                 m(
                   'span.tree-item-title',
-                  { class: `${editable.canUpdate ? 'moveable' : ''}` },
+                  { class: `${editable.canUpdate ? 'moveable' : ''} ${hasChildren ? '' : 'tree-item-no-children'}` },
                   m(treeItemView, { treeItem: item, depth: _depth(item) })
                 ),
               ],
               m('.act-group', [
                 editable.canCreate && !_hasChildren(item) && _depth(item) < maxDepth
-                  ? m(TreeButton, { buttonName: 'add_children', onclick: () =>  {
-                    _addChildren(item);
-                    tiState.isOpen = true;
-                  } })
+                  ? m(TreeButton, {
+                      buttonName: 'add_children',
+                      onclick: () => {
+                        _addChildren(item);
+                        tiState.isOpen = true;
+                      },
+                    })
                   : '',
                 editable.canDelete && (editable.canDeleteParent || !_hasChildren(item))
                   ? m(TreeButton, { buttonName: 'delete', onclick: () => onDelete(item) })
@@ -97,8 +99,8 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
             ),
             _isExpanded(item, tiState.isOpen)
               ? m('ul.tree-item-body', [
-                // ...item[children].map((i: ITreeItem) =>
-                ..._findChildren(item).map((i: ITreeItem) =>
+                  // ...item[children].map((i: ITreeItem) =>
+                  ..._findChildren(item).map((i: ITreeItem) =>
                     m(TreeItem, {
                       item: i,
                       options,
@@ -110,10 +112,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                   options.editable.canCreate
                     ? m(
                         'li',
-                        m(
-                          '.indent',
-                          m(TreeButton, { buttonName: 'create', onclick: () => _createItem(item[id]) })
-                        )
+                        m('.indent', m(TreeButton, { buttonName: 'create', onclick: () => _createItem(item[id]) }))
                       )
                     : '',
                 ])
