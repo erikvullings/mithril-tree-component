@@ -27,13 +27,13 @@
   "homepage": "https://github.com/erikvullings/mithril-tree-component#readme",
   "dependencies": {
     "materialize-css": "^1.0.0",
-    "mithril": "^2.0.0-rc.4",
-    "mithril-tree-component": "^0.3.7"
+    "mithril": "next",
+    "mithril-tree-component": "^0.4.0"
   },
   "devDependencies": {
-    "@types/mithril": "^1.1.15",
-    "autoprefixer": "^9.4.7",
-    "parcel-bundler": "^1.11.0",
-    "typescript": "^3.3.3"
+    "@types/mithril": "^1.1.16",
+    "autoprefixer": "^9.5.1",
+    "parcel-bundler": "^1.12.3",
+    "typescript": "^3.4.5"
   }
 }

@@ -2,15 +2,19 @@
   "name": "mithril-tree-component",
   "version": "0.4.0",
   "description": "A tree component for the Mitrhil framework.",
-  "main": "dist/index.js",
+  "main": "dist/mithril-tree-component.js",
+  "module": "dist/mithril-tree-component.mjs",
+  "browser": "dist/mithril-tree-component.mjs",
   "typings": "dist/index.d.ts",
   "scripts": {
     "link": "npm link",
-    "buildcomp": "npm run build",
-    "start": "tsc -w",
-    "build": "tsc",
-    "patch-release": "tsc && npm version patch && npm publish && git push --follow-tags",
-    "minor-release": "tsc && npm version minor && npm publish && git push --follow-tags"
+    "start": "rollup -c -w",
+    "build": "npm run build:production",
+    "build:production": "rm -fr ./dist && rollup -c",
+    "build:domain": "typedoc --out ../../docs/typedoc src",
+    "patch-release": "npm run build && npm version patch --force -m \"Patch release\" && npm publish && git push --follow-tags",
+    "minor-release": "npm run build && npm version minor --force -m \"Minor release\" && npm publish && git push --follow-tags",
+    "major-release": "npm run build && npm version major --force -m \"Major release\" && npm publish && git push --follow-tags"
   },
   "repository": {
     "type": "git",
@@ -29,7 +33,18 @@
   },
   "homepage": "https://github.com/erikvullings/mithril-tree-component#readme",
   "devDependencies": {
-    "@types/mithril": "^1.1.15",
-    "typescript": "^3.3.3"
+    "@types/mithril": "^1.1.16",
+    "autoprefixer": "^9.5.1",
+    "rollup": "^1.11.3",
+    "rollup-plugin-commonjs": "^9.3.4",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-resolve": "^4.2.3",
+    "rollup-plugin-postcss": "^2.0.3",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "rollup-plugin-terser": "^4.0.4",
+    "rollup-plugin-typescript2": "^0.21.0",
+    "tslib": "^1.9.3",
+    "typedoc": "^0.14.2",
+    "typescript": "^3.4.5"
   }
 }

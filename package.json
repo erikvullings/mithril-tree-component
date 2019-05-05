@@ -28,6 +28,6 @@
     "minor-release": "lerna run minor-release"
   },
   "devDependencies": {
-    "lerna": "^3.0.0-rc.0"
+    "lerna": "^3.13.4"
   }
 }
