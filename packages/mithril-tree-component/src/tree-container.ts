@@ -149,7 +149,7 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
     const onDelete = wrapper((ti: ITreeItem) => deleteTreeItem(ti[id]), opts.onBeforeDelete, opts.onDelete);
 
     const onUpdate = wrapper(
-      (ti: ITreeItem, action: TreeItemUpdateAction = 'edit', newParent?: ITreeItem) => updateTreeItem(ti),
+      (ti: ITreeItem, _: TreeItemUpdateAction = 'edit', __?: ITreeItem) => updateTreeItem(ti),
       opts.onBeforeUpdate,
       opts.onUpdate
     );
@@ -166,11 +166,14 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
     };
 
     const dragOpts = {
-      ondrop: (ev: any) => {
+      ondrop: (ev: DragEvent) => {
+        if (!ev.dataTransfer || !ev.target) {
+          return false;
+        }
         ev.preventDefault(); // do not open a link
         const convertId = (cid: string | number) => (isNaN(+cid) ? cid : +cid);
         const sourceId = convertId(ev.dataTransfer.getData('text').replace(TreeItemIdPrefix, ''));
-        const targetId = convertId((findId(ev.target) || '').replace(TreeItemIdPrefix, ''));
+        const targetId = convertId((findId(ev.target as HTMLElement) || '').replace(TreeItemIdPrefix, ''));
         log(`Dropping ${sourceId} on ${targetId}`);
         if (sourceId === targetId) {
           return false;
@@ -192,6 +195,7 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
           if (opts.onUpdate) {
             opts.onUpdate(tiSource, 'move', tiTarget);
           }
+          return true;
         } else if (tiSource) {
           if (opts.onBeforeUpdate && opts.onBeforeUpdate(tiSource, 'move', tiTarget) === false) {
             return false;
@@ -204,6 +208,9 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
           if (opts.onUpdate) {
             opts.onUpdate(tiSource, 'move', tiTarget);
           }
+          return true;
+        } else {
+          return false;
         }
       },
       ondragover: (ev: any) => {
