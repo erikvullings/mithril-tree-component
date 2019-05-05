@@ -4,6 +4,7 @@ import { IInternalTreeOptions } from './models/tree-options';
 import { ITreeItem, ITreeOptions, TreeItemUpdateAction } from './models';
 import { uuid4, TreeButton, move } from './utils';
 import { ITreeState } from './models/tree-state';
+import './tree-container.css';
 
 export let log: (...args: any[]) => void = () => undefined;
 

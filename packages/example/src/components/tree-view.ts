@@ -5,6 +5,7 @@ interface IMyTree extends ITreeItem {
   id: number | string;
   parentId: number | string;
   title: string;
+  description: string;
 }
 
 export const TreeView = () => {
