@@ -5,6 +5,7 @@
   "description": "Example project, showing how to use the Mitrhil tree component.",
   "main": "index.js",
   "scripts": {
+    "link": "npm link mithril-tree-component",
     "start": "parcel index.html",
     "build": "parcel build index.html --out-dir ../../docs --public-url https://erikvullings.github.io/mithril-tree-component",
     "deploy": "npm run build"
@@ -28,7 +29,7 @@
   "dependencies": {
     "materialize-css": "^1.0.0",
     "mithril": "next",
-    "mithril-tree-component": "^0.4.0"
+    "mithril-tree-component": "^0.5.0"
   },
   "devDependencies": {
     "@types/mithril": "^1.1.16",
