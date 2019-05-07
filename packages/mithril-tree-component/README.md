@@ -26,6 +26,15 @@ This repository contains two projects:
 
 ## Changes
 
+### 0.5.2
+
+- Publishing two libraries: `mithril-tree-component.js` and `mithril-tree-component.mjs`, the latter using ES modules.
+- Integrated `css` inside the component, so you do not need to load a separate stylesheet.
+- Using BEM naming convention for the `css`, and prefix every class with `mtc-` to make their names more unique.
+- Improved usability:
+  - display a placeholder for the empty tree.
+  - only show the action buttons when hovering, and only then, create vertical space for them (so the tree is more continuous).
+
 ### 0.4.0
 
 This version of the tree component:
