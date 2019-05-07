@@ -53,6 +53,7 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       multipleRoots: true,
       logging: false,
       editable: { canCreate: false, canDelete: false, canUpdate: false, canDeleteParent: false },
+      placeholder: 'Create your first item',
       ...options,
     } as IInternalTreeOptions;
 
@@ -282,44 +283,56 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
     el.id ? el.id : el.parentElement ? findId(el.parentElement) : null;
 
   return {
-    oninit: ({ attrs }) => {
-      const { options, dragOptions } = setDefaultOptions(attrs.options);
+    oninit: ({ attrs: { options: treeOptions } }) => {
+      const { options, dragOptions } = setDefaultOptions(treeOptions);
       state.options = options;
       state.dragOptions = dragOptions;
+      state.parentId = options.parentId;
     },
-    view: ({ attrs }) => {
-      state.tree = attrs.tree;
-      const { parentId } = state.options;
-      const { options, dragOptions } = state;
+    view: ({ attrs: { tree } }) => {
+      state.tree = tree;
+      const { options, dragOptions, parentId } = state;
       if (!state.tree || !options || !dragOptions) {
         return undefined;
       }
-      return m(
-        `.tree-container[draggable=${options.editable.canUpdate}]`,
-        { ...dragOptions },
-        m('ul', [
-          ...state.tree
-            .filter(item => !item[parentId])
-            .map(item =>
-              m(TreeItem, {
-                item,
-                options,
-                dragOptions,
-                selectedId: state.selectedId,
-                key: item[options.id],
-              })
-            ),
-          m(
-            'li',
+      const isEmpty = state.tree.length === 0;
+      return isEmpty
+        ? m(
+            '.tree-container.empty',
             m(
-              '.tree-item.clickable',
-              options.editable.canCreate && options.multipleRoots
-                ? m('.indent', m(TreeButton, { buttonName: 'create', onclick: () => options._createItem() }))
-                : ''
+              'span.act.tree-item-header',
+              {
+                onclick: () => options._createItem(),
+              },
+              [m('span', '✚'), m('i', options.placeholder)]
             )
-          ),
-        ])
-      );
+          )
+        : m(
+            `.tree-container[draggable=${options.editable.canUpdate}]`,
+            { ...dragOptions },
+            m('ul.tree-branch', [
+              ...state.tree
+                .filter(item => !item[parentId])
+                .map(item =>
+                  m(TreeItem, {
+                    item,
+                    options,
+                    dragOptions,
+                    selectedId: state.selectedId,
+                    key: item[options.id],
+                  })
+                ),
+              m(
+                'li',
+                m(
+                  '.tree-item.clickable',
+                  options.editable.canCreate && options.multipleRoots
+                    ? m('.indent', m(TreeButton, { buttonName: 'create', onclick: () => options._createItem() }))
+                    : ''
+                )
+              ),
+            ])
+          );
     },
   };
 };

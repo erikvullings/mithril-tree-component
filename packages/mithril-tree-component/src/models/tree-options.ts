@@ -72,6 +72,8 @@ export interface ITreeOptions {
    * The component will receive an onclick attribute to perform its function.
    */
   button: (name: TreeItemAction) => Component<Attributes>;
+  /** When the tree is empty, what text do you want to show. Default 'Create your first item' */
+  placeholder: string;
 }
 
 export interface IInternalTreeOptions extends ITreeOptions {

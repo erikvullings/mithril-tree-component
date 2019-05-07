@@ -18,6 +18,7 @@ export const TreeView = () => {
     { id: 6, parentId: 0, title: 'My id is 6', description: 'Description of item 6.' },
     { id: 7, parentId: 4, title: 'My id is 7', description: 'Description of item 7.' },
   ];
+  const emptyTree: IMyTree[] = [];
   const tree = data;
   const options = {
     id: 'id',
@@ -46,6 +47,7 @@ export const TreeView = () => {
 
   const options2 = {
     ...options,
+    placeholder: 'Create a new tree item',
     editable: { canCreate: true, canDelete: true, canUpdate: true, canDeleteParent: false },
   };
 
@@ -106,6 +108,8 @@ export const TreeView = () => {
       // console.log('Drawing the view...');
       return m('.row', [
         m('.col.s6', [
+          m('h3', 'CRUD, empty tree'),
+          m(TreeContainer, { tree: emptyTree, options: options2 }),
           m('h3', 'Readonly'),
           m(TreeContainer, { tree, options }),
           m('h3', 'CRUD'),

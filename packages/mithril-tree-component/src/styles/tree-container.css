@@ -1,4 +1,4 @@
-.clearfix::after {
+.tree-container .clearfix::after {
   content: '';
   clear: both;
   display: table;
@@ -12,46 +12,49 @@
   overflow: hidden;
   position: relative;
 }
-
-.clickable {
+.tree-container.empty {
+  padding: 1em 0;
+}
+.tree-container .clickable {
   cursor: pointer;
   margin: 0 2px;
 }
 
-.collapse-expand-item {
+.tree-container .collapse-expand-item {
   margin: 0 10px;
 }
 
-.tree-item-no-children {
+.tree-container .tree-item-no-children {
   margin-left: 34px;
 }
 
-.indent {
+.tree-container .indent {
   margin: 0 28px;
 }
 
-.moveable {
+.tree-container .moveable {
   cursor: move;
 }
 
-.tree-item {
+.tree-container .tree-item {
   cursor: pointer;
 }
 
-.tree-item-header.active {
+.tree-container .tree-item-header.active {
   background: #e0e0e0;
 }
 
-.tree-item-header:focus {
+.tree-container .tree-item-header:focus {
   color: blue;
   background-color: #cf5c3f;
 }
 
-.tree-item-header {
+.tree-container .tree-item-header {
   line-height: 36px;
+  width: 100%;
 }
 
-.tree-item-header a {
+.tree-container .tree-item-header a {
   float: left;
   color: #f2f2f2;
   text-align: center;
@@ -60,50 +63,56 @@
   font-size: 17px;
 }
 
-.tree-item .act-group {
+.tree-container .tree-item .act-group {
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s, opacity 0.5s linear;
   float: right;
   display: none;
 }
-.tree-item-header:hover .act-group {
+.tree-container .tree-item-header:hover .act-group {
   visibility: visible;
   opacity: 1;
   display: inline-block;
 }
 
-.act {
+.tree-container .act {
   font-weight: bold;
   cursor: pointer;
   display: inline-block;
   padding: 0 0.3rem;
 }
-.act:hover {
+.tree-container .act i {
+  font-weight: normal;
+  cursor: pointer;
+  display: inline-block;
+  padding: 0 0.3rem;
+}
+.tree-container .act:hover {
   background: #e0e0e0;
 }
 
-.tree-item .act {
+.tree-container .tree-branch .act {
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s, opacity 0.5s linear;
   display: none;
 }
 
-.tree-item:hover .act {
+.tree-container .tree-branch:hover .act {
   visibility: visible;
   opacity: 1;
   display: inline-block;
 }
 
-ul.tree-item-body {
+.tree-container ul.tree-item-body {
   padding-left: 0.8rem;
 }
 
-ul.tree-item-body > li {
+.tree-container ul.tree-item-body > li {
   white-space: nowrap;
 }
 
-span.tree-item-title {
+.tree-container span.tree-item-title {
   margin-right: 1rem;
 }

@@ -4,6 +4,8 @@ import { ITreeItem } from '.';
 
 export interface ITreeState {
   tree?: ITreeItem[];
+  /** Name of the parent ID property (default 'parentId') */
+  parentId: string;
   /** ID of the selected tree item */
   selectedId?: string | number;
   /** ID of the tree item that is being dragged */
