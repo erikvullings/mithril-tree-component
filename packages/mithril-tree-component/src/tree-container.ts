@@ -298,9 +298,9 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       const isEmpty = state.tree.length === 0;
       return isEmpty
         ? m(
-            '.tree-container.empty',
+            '.mtc.mtc__empty',
             m(
-              'span.act.tree-item-header',
+              'span.mtc__act.mtc__header',
               {
                 onclick: () => options._createItem(),
               },
@@ -308,9 +308,9 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
             )
           )
         : m(
-            `.tree-container[draggable=${options.editable.canUpdate}]`,
+            `.mtc[draggable=${options.editable.canUpdate}]`,
             { ...dragOptions },
-            m('ul.tree-branch', [
+            m('ul.mtc__branch', [
               ...state.tree
                 .filter(item => !item[parentId])
                 .map(item =>
@@ -325,9 +325,9 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
               m(
                 'li',
                 m(
-                  '.tree-item.clickable',
+                  '.mtc__item.mtc__clickable',
                   options.editable.canCreate && options.multipleRoots
-                    ? m('.indent', m(TreeButton, { buttonName: 'create', onclick: () => options._createItem() }))
+                    ? m('.mtc__indent', m(TreeButton, { buttonName: 'create', onclick: () => options._createItem() }))
                     : ''
                 )
               ),

@@ -1,10 +1,10 @@
-.tree-container .clearfix::after {
+.mtc mtc__clearfix::after {
   content: '';
   clear: both;
   display: table;
 }
 
-.tree-container {
+.mtc {
   padding-left: 0;
   margin: 0.5rem 0 1rem 0;
   border: 1px solid #e0e0e0;
@@ -12,49 +12,49 @@
   overflow: hidden;
   position: relative;
 }
-.tree-container.empty {
+.mtc.mtc__empty {
   padding: 1em 0;
 }
-.tree-container .clickable {
+.mtc .mtc__clickable {
   cursor: pointer;
   margin: 0 2px;
 }
 
-.tree-container .collapse-expand-item {
+.mtc .mtc__collapse-expand-item {
   margin: 0 10px;
 }
 
-.tree-container .tree-item-no-children {
+.mtc .mtc__childless-item {
   margin-left: 34px;
 }
 
-.tree-container .indent {
+.mtc .mtc__indent {
   margin: 0 28px;
 }
 
-.tree-container .moveable {
+.mtc .mtc__moveable {
   cursor: move;
 }
 
-.tree-container .tree-item {
+.mtc .mtc__item {
   cursor: pointer;
 }
 
-.tree-container .tree-item-header.active {
+.mtc .mtc__header.active {
   background: #e0e0e0;
 }
 
-.tree-container .tree-item-header:focus {
+.mtc .mtc__header:focus {
   color: blue;
   background-color: #cf5c3f;
 }
 
-.tree-container .tree-item-header {
+.mtc .mtc__header {
   line-height: 36px;
   width: 100%;
 }
 
-.tree-container .tree-item-header a {
+.mtc .mtc__header a {
   float: left;
   color: #f2f2f2;
   text-align: center;
@@ -63,56 +63,56 @@
   font-size: 17px;
 }
 
-.tree-container .tree-item .act-group {
+.mtc .mtc__item .mtc__act-group {
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s, opacity 0.5s linear;
   float: right;
   display: none;
 }
-.tree-container .tree-item-header:hover .act-group {
+.mtc .mtc__header:hover .mtc__act-group {
   visibility: visible;
   opacity: 1;
   display: inline-block;
 }
 
-.tree-container .act {
+.mtc .mtc__act {
   font-weight: bold;
   cursor: pointer;
   display: inline-block;
   padding: 0 0.3rem;
 }
-.tree-container .act i {
+.mtc .mtc__act i {
   font-weight: normal;
   cursor: pointer;
   display: inline-block;
   padding: 0 0.3rem;
 }
-.tree-container .act:hover {
+.mtc .mtc__act:hover {
   background: #e0e0e0;
 }
 
-.tree-container .tree-branch .act {
+.mtc .mtc__branch .mtc__act {
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s, opacity 0.5s linear;
   display: none;
 }
 
-.tree-container .tree-branch:hover .act {
+.mtc .mtc__branch:hover .mtc__act {
   visibility: visible;
   opacity: 1;
   display: inline-block;
 }
 
-.tree-container ul.tree-item-body {
+.mtc ul.mtc__item-body {
   padding-left: 0.8rem;
 }
 
-.tree-container ul.tree-item-body > li {
+.mtc ul.mtc__item-body > li {
   white-space: nowrap;
 }
 
-.tree-container span.tree-item-title {
+.mtc span.mtc__item-title {
   margin-right: 1rem;
 }

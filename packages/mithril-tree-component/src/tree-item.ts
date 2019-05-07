@@ -56,7 +56,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
       const hasChildren = _hasChildren(item);
       return m(`li[id=${TreeItemIdPrefix}${item[id]}][draggable=${options.editable.canUpdate}]`, dragOptions, [
         m(
-          '.tree-item',
+          '.mtc__item',
           {
             onclick: (ev: MouseEvent) => {
               ev.stopPropagation();
@@ -65,7 +65,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
           },
           [
             m(
-              '.tree-item-header.clearfix',
+              '.mtc__header.mtc__clearfix',
               {
                 class: `${selectedId === item[id] ? 'active' : ''}`,
               },
@@ -77,12 +77,12 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                     })
                   : undefined,
                 m(
-                  'span.tree-item-title',
-                  { class: `${editable.canUpdate ? 'moveable' : ''} ${hasChildren ? '' : 'tree-item-no-children'}` },
+                  'span.mtc__item-title',
+                  { class: `${editable.canUpdate ? 'mtc__moveable' : ''} ${hasChildren ? '' : 'mtc__childless-item'}` },
                   m(treeItemView, { treeItem: item, depth: _depth(item) })
                 ),
               ],
-              m('.act-group', [
+              m('.mtc__act-group', [
                 editable.canCreate && !_hasChildren(item) && _depth(item) < maxDepth
                   ? m(TreeButton, {
                       buttonName: 'add_children',
@@ -98,7 +98,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
               ])
             ),
             _isExpanded(item, tiState.isOpen)
-              ? m('ul.tree-item-body', [
+              ? m('ul.mtc__item-body', [
                   // ...item[children].map((i: ITreeItem) =>
                   ..._findChildren(item).map((i: ITreeItem) =>
                     m(TreeItem, {
@@ -112,7 +112,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                   options.editable.canCreate
                     ? m(
                         'li',
-                        m('.indent', m(TreeButton, { buttonName: 'create', onclick: () => _createItem(item[id]) }))
+                        m('.mtc__indent', m(TreeButton, { buttonName: 'create', onclick: () => _createItem(item[id]) }))
                       )
                     : '',
                 ])
