@@ -108,8 +108,6 @@ export const TreeView = () => {
       // console.log('Drawing the view...');
       return m('.row', [
         m('.col.s6', [
-          m('h3', 'CRUD, empty tree'),
-          m(TreeContainer, { tree: emptyTree, options: options2 }),
           m('h3', 'Readonly'),
           m(TreeContainer, { tree, options }),
           m('h3', 'CRUD'),
@@ -120,6 +118,8 @@ export const TreeView = () => {
           m(TreeContainer, { tree, options: options4 }),
           m('h3', 'CRUD, async. create and delete'),
           m(TreeContainer, { tree, options: options5 }),
+          m('h3', 'CRUD, empty tree'),
+          m(TreeContainer, { tree: emptyTree, options: options2 }),
         ]),
         m('.col.s6', [
           m(
