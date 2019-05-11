@@ -91,7 +91,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                   '.mtc__item-title',
                   {
                     class: `${canUpdate ? 'mtc__moveable' : ''} ${hasChildren ? '' : 'mtc__childless-item'}`,
-                    style: `max-width: ${width - 64 - 12 * depth}px`,
+                    style: `max-width: ${width}px`,
                   },
                   m(treeItemView, { treeItem: item, depth, width })
                 ),
@@ -116,7 +116,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                   // ...item[children].map((i: ITreeItem) =>
                   ..._findChildren(item).map((i: ITreeItem) =>
                     m(TreeItem, {
-                      width,
+                      width: width - 12,
                       item: i,
                       options,
                       dragOptions,

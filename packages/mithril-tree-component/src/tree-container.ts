@@ -1,5 +1,5 @@
 import './styles/tree-container.css';
-import m, { FactoryComponent, Attributes } from 'mithril';
+import m, { FactoryComponent, Attributes, VnodeDOM } from 'mithril';
 import { TreeItem, TreeItemIdPrefix } from './tree-item';
 import { IInternalTreeOptions } from './models/tree-options';
 import { ITreeItem, ITreeOptions, TreeItemUpdateAction } from './models';
@@ -273,6 +273,12 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
   const findId = (el: HTMLElement): string | null =>
     el.id ? el.id : el.parentElement ? findId(el.parentElement) : null;
 
+  const setTopWidth:
+    | ((this: {}, vnode: VnodeDOM<{ tree: ITreeItem[]; options: Partial<ITreeOptions> }, {}>) => any)
+    | undefined = ({ dom }) => {
+    state.width = dom.clientWidth - 64;
+  };
+
   return {
     oninit: ({ attrs: { options: treeOptions } }) => {
       const { options, dragOptions } = setDefaultOptions(treeOptions);
@@ -280,13 +286,8 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       state.dragOptions = dragOptions;
       state.parentId = options.parentId;
     },
-    onupdate: ({ dom }) => {
-      state.width = dom.clientWidth;
-    },
-    oncreate: ({ dom }) => {
-      console.table(dom.clientWidth);
-      state.width = dom.clientWidth;
-    },
+    onupdate: setTopWidth,
+    oncreate: setTopWidth,
     view: ({ attrs: { tree } }) => {
       state.tree = tree;
       const { options, dragOptions, parentId, width } = state;

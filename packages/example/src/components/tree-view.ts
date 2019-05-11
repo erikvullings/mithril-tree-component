@@ -63,7 +63,7 @@ export const TreeView = () => {
         },
       }) =>
         m(
-          'div', { style: `max-width: ${width}px` },
+          'div', { style: `max-width: ${width - 32}px` },
           m('div', { style: 'font-weight: bold; margin-right: 1rem' }, `Depth ${depth}: ${title}`),
           m('div', { style: 'font-style: italic;' }, description || '...')
         ),
