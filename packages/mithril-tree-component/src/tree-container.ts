@@ -173,6 +173,7 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
         if (!ev.dataTransfer || !ev.target) {
           return false;
         }
+        state.isDragging = false;
         ev.preventDefault(); // do not open a link
         const convertId = (cid: string | number) => (isNaN(+cid) ? cid : +cid);
         const sourceId = convertId(ev.dataTransfer.getData('text').replace(TreeItemIdPrefix, ''));
@@ -224,10 +225,23 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
           ev.preventDefault();
         }
       },
+      ondragenter: (ev: DragEvent) => {
+        const sourceId = state.dragId;
+        const target = ev.target as HTMLElement;
+        const targetId = findId(target) || '';
+        log('entering ' + targetId);
+        target.style.cursor = targetId === sourceId ? 'no-drop' : 'auto';
+      },
+      ondragleave: (ev: DragEvent) => {
+        const target = ev.target as HTMLElement;
+        const targetId = findId(target) || '';
+        log('leaving ' + targetId);
+      },
       ondragstart: (ev: DragEvent) => {
         const target = ev.target;
         (ev as any).redraw = false;
         if (target && ev.dataTransfer) {
+          state.isDragging = true;
           ev.dataTransfer.setData('text', (target as any).id);
           ev.dataTransfer.effectAllowed = 'move';
           state.dragId = (target as any).id;
@@ -270,8 +284,8 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
   };
 
   /** Find the ID of the first parent element. */
-  const findId = (el: HTMLElement): string | null =>
-    el.id ? el.id : el.parentElement ? findId(el.parentElement) : null;
+  const findId = (el: HTMLElement | null): string | null =>
+    el ? el.id ? el.id : el.parentElement ? findId(el.parentElement) : null : null;
 
   const setTopWidth:
     | ((this: {}, vnode: VnodeDOM<{ tree: ITreeItem[]; options: Partial<ITreeOptions> }, {}>) => any)

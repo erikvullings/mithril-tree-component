@@ -16,4 +16,6 @@ export interface ITreeState {
   dragOptions: Attributes;
   /** Width of the item */
   width: number;
+  /** When dragging, set this to true */
+  isDragging: boolean;
 }

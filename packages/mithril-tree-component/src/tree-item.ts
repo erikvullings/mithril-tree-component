@@ -65,70 +65,74 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
       const isExpanded = _isExpanded(item, isOpen);
       const hasChildren = _hasChildren(item);
       const depth = _depth(item);
-      return m(`li[id=${TreeItemIdPrefix}${item[id]}][draggable=${canUpdate}]`, dragOptions, [
-        m(
-          '.mtc__item',
-          {
-            onclick: (ev: MouseEvent) => {
-              ev.stopPropagation();
-              onSelect(item, selectedId !== item[id]);
-            },
-          },
-          [
-            m(
-              '.mtc__header.mtc__clearfix',
-              {
-                class: `${selectedId === item[id] ? 'active' : ''}`,
+      return m(
+        `li${canUpdate ? '.mtc__draggable' : ''}[id=${TreeItemIdPrefix}${item[id]}][draggable=${canUpdate}]`,
+        dragOptions,
+        [
+          m(
+            '.mtc__item',
+            {
+              onclick: (ev: MouseEvent) => {
+                ev.stopPropagation();
+                onSelect(item, selectedId !== item[id]);
               },
-              [
-                hasChildren
-                  ? m(TreeButton, {
-                      buttonName: isExpanded ? 'expand_less' : 'expand_more',
-                      onclick: () => toggle(item),
-                    })
-                  : undefined,
-                m(
-                  '.mtc__item-title',
-                  {
-                    class: `${canUpdate ? 'mtc__moveable' : ''} ${hasChildren ? '' : 'mtc__childless-item'}`,
-                    style: `max-width: ${width}px`,
-                  },
-                  m(treeItemView, { treeItem: item, depth, width })
-                ),
-              ],
-              m('.mtc__act-group', [
-                canDelete && (canDeleteParent || !hasChildren)
-                  ? m(TreeButton, { buttonName: 'delete', onclick: () => onDelete(item) })
-                  : '',
-                canCreate && depth < maxDepth
-                  ? m(TreeButton, {
-                      buttonName: 'add_child',
-                      onclick: () => {
-                        _addChildren(item, width);
-                        open(item, isExpanded);
-                      },
-                    })
-                  : '',
-              ])
-            ),
-            isExpanded
-              ? m('ul.mtc__item-body', [
-                  // ...item[children].map((i: ITreeItem) =>
-                  ..._findChildren(item).map((i: ITreeItem) =>
-                    m(TreeItem, {
-                      width: width - 12,
-                      item: i,
-                      options,
-                      dragOptions,
-                      selectedId,
-                      key: i[id],
-                    })
+            },
+            [
+              m(
+                '.mtc__header.mtc__clearfix',
+                {
+                  class: `${selectedId === item[id] ? 'active' : ''}`,
+                },
+                [
+                  hasChildren
+                    ? m(TreeButton, {
+                        buttonName: isExpanded ? 'expand_less' : 'expand_more',
+                        onclick: () => toggle(item),
+                      })
+                    : undefined,
+                  m(
+                    '.mtc__item-title',
+                    {
+                      class: `${canUpdate ? 'mtc__moveable' : ''} ${hasChildren ? '' : 'mtc__childless-item'}`,
+                      style: `max-width: ${width}px`,
+                    },
+                    m(treeItemView, { treeItem: item, depth, width })
                   ),
+                ],
+                m('.mtc__act-group', [
+                  canDelete && (canDeleteParent || !hasChildren)
+                    ? m(TreeButton, { buttonName: 'delete', onclick: () => onDelete(item) })
+                    : '',
+                  canCreate && depth < maxDepth
+                    ? m(TreeButton, {
+                        buttonName: 'add_child',
+                        onclick: () => {
+                          _addChildren(item, width);
+                          open(item, isExpanded);
+                        },
+                      })
+                    : '',
                 ])
-              : '',
-          ]
-        ),
-      ]);
+              ),
+              isExpanded
+                ? m('ul.mtc__item-body', [
+                    // ...item[children].map((i: ITreeItem) =>
+                    ..._findChildren(item).map((i: ITreeItem) =>
+                      m(TreeItem, {
+                        width: width - 12,
+                        item: i,
+                        options,
+                        dragOptions,
+                        selectedId,
+                        key: i[id],
+                      })
+                    ),
+                  ])
+                : '',
+            ]
+          ),
+        ]
+      );
     },
   };
 };
