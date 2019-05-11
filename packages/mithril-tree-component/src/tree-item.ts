@@ -93,6 +93,9 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                 ),
               ],
               m('.mtc__act-group', [
+                canDelete && (canDeleteParent || !hasChildren)
+                  ? m(TreeButton, { buttonName: 'delete', onclick: () => onDelete(item) })
+                  : '',
                 canCreate && _depth(item) < maxDepth
                   ? m(TreeButton, {
                       buttonName: 'add_child',
@@ -101,9 +104,6 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                         open(item, isExpanded);
                       },
                     })
-                  : '',
-                canDelete && (canDeleteParent || !hasChildren)
-                  ? m(TreeButton, { buttonName: 'delete', onclick: () => onDelete(item) })
                   : '',
               ])
             ),
