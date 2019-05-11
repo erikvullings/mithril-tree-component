@@ -21,6 +21,7 @@ export const TreeView = () => {
   const emptyTree: IMyTree[] = [];
   const tree = data;
   const options = {
+    logging: true,
     id: 'id',
     parentId: 'parentId',
     isOpen: 'isOpen',

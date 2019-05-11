@@ -168,46 +168,66 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       view: ({ attrs: { treeItem } }) => treeItem[name],
     };
 
+    /** The drop location indicates the new position of the dropped element: above, below or as a child */
+    const computeDropLocation = (target: HTMLElement, ev: DragEvent) => {
+      const { top, height } = target.getBoundingClientRect();
+      const y = ev.clientY - top;
+      const deltaZone = height / 3;
+      return y < deltaZone ? 'above' : y < 2 * deltaZone ? 'as_child' : 'below';
+    };
+
+    const convertId = (cid: string | number) => (isNaN(+cid) ? cid : +cid);
+
+    const dndTreeItems = (target: HTMLElement, ev: DragEvent) => {
+      if (ev.dataTransfer) {
+        const sourceId = convertId(ev.dataTransfer.getData('text').replace(TreeItemIdPrefix, ''));
+        const targetId = convertId((findId(target) || '').replace(TreeItemIdPrefix, ''));
+        const tiSource = find(sourceId);
+        const tiTarget = find(targetId);
+        return { tiSource, tiTarget, sourceId, targetId };
+      }
+      return { tiSource: undefined, tiTarget: undefined, sourceId: undefined, targetId: undefined };
+    };
+
     const dragOpts = {
       ondrop: (ev: DragEvent) => {
         if (!ev.dataTransfer || !ev.target) {
           return false;
         }
+        const target = ev.target as HTMLElement;
+        const parent = findParent(target);
+        if (!parent) {
+          return;
+        }
+        parent.classList.remove('mtc__above', 'mtc__below', 'mtc__as_child');
         state.isDragging = false;
         ev.preventDefault(); // do not open a link
-        const convertId = (cid: string | number) => (isNaN(+cid) ? cid : +cid);
-        const sourceId = convertId(ev.dataTransfer.getData('text').replace(TreeItemIdPrefix, ''));
-        const targetId = convertId((findId(ev.target as HTMLElement) || '').replace(TreeItemIdPrefix, ''));
-        log(`Dropping ${sourceId} on ${targetId}`);
+        const { sourceId, targetId, tiSource, tiTarget } = dndTreeItems(target, ev);
+        const dropLocation = computeDropLocation(parent, ev);
+        log(`Dropping ${sourceId} ${dropLocation} ${targetId}`);
         if (sourceId === targetId) {
           return false;
         }
-        const tiSource = find(sourceId);
-        const tiTarget = find(targetId);
         if (tiSource && tiTarget) {
           if (opts.onBeforeUpdate && opts.onBeforeUpdate(tiSource, 'move', tiTarget) === false) {
             return false;
           }
-          tiSource[parentId] = tiTarget[id];
+          tiSource[parentId] = tiTarget[dropLocation === 'as_child' ? id : parentId];
           if (state.tree) {
-            const index = state.tree && state.tree.indexOf(tiSource);
-            move(state.tree, index, state.tree.length - 1);
+            const sourceIndex = state.tree && state.tree.indexOf(tiSource);
+            const targetIndex = state.tree && state.tree.indexOf(tiTarget);
+            const newIndex = Math.max(
+              0,
+              dropLocation === 'above'
+                ? targetIndex - 1
+                : dropLocation === 'below'
+                ? targetIndex + 1
+                : state.tree.length - 1
+            );
+            move(state.tree, sourceIndex, newIndex);
           }
-          if (isOpen) {
+          if (dropLocation === 'as_child' && isOpen) {
             tiTarget[isOpen] = true;
-          }
-          if (opts.onUpdate) {
-            opts.onUpdate(tiSource, 'move', tiTarget);
-          }
-          return true;
-        } else if (tiSource) {
-          if (opts.onBeforeUpdate && opts.onBeforeUpdate(tiSource, 'move', tiTarget) === false) {
-            return false;
-          }
-          tiSource[parentId] = undefined;
-          if (state.tree) {
-            const index = state.tree && state.tree.indexOf(tiSource);
-            move(state.tree, index, state.tree.length - 1);
           }
           if (opts.onUpdate) {
             opts.onUpdate(tiSource, 'move', tiTarget);
@@ -217,25 +237,36 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
           return false;
         }
       },
-      ondragover: (ev: any) => {
+      ondragover: (ev: DragEvent) => {
+        const target = ev.target as HTMLElement;
         const sourceId = state.dragId;
-        const targetId = findId(ev.target) || '';
-        ev.redraw = false;
-        if (sourceId !== targetId) {
+        const targetId = findId(target) || '';
+        (ev as any).redraw = false;
+        if (targetId && sourceId !== targetId) {
           ev.preventDefault();
+          const parent = findParent(target);
+          if (parent) {
+            const dropLocation = computeDropLocation(parent, ev);
+            parent.classList.remove('mtc__above', 'mtc__below', 'mtc__as_child');
+            parent.classList.add('mtc__' + dropLocation);
+          }
         }
       },
       ondragenter: (ev: DragEvent) => {
-        const sourceId = state.dragId;
         const target = ev.target as HTMLElement;
-        const targetId = findId(target) || '';
-        log('entering ' + targetId);
-        target.style.cursor = targetId === sourceId ? 'no-drop' : 'auto';
+        const { sourceId, targetId, tiSource, tiTarget } = dndTreeItems(target, ev);
+        const disallowDrop =
+          targetId === sourceId ||
+          (tiSource && opts.onBeforeUpdate && opts.onBeforeUpdate(tiSource, 'move', tiTarget) === false);
+        target.style.cursor = disallowDrop ? 'no-drop' : '';
       },
       ondragleave: (ev: DragEvent) => {
         const target = ev.target as HTMLElement;
-        const targetId = findId(target) || '';
-        log('leaving ' + targetId);
+        target.style.cursor = '';
+        const parent = findParent(target);
+        if (parent) {
+          parent.classList.remove('mtc__above', 'mtc__below', 'mtc__as_child');
+        }
       },
       ondragstart: (ev: DragEvent) => {
         const target = ev.target;
@@ -285,7 +316,11 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
 
   /** Find the ID of the first parent element. */
   const findId = (el: HTMLElement | null): string | null =>
-    el ? el.id ? el.id : el.parentElement ? findId(el.parentElement) : null : null;
+    el ? (el.id ? el.id : el.parentElement ? findId(el.parentElement) : null) : null;
+
+  /** Find the ID of the first parent element. */
+  const findParent = (el: HTMLElement | null): HTMLElement | null =>
+    el ? (el.id ? el : el.parentElement ? findParent(el.parentElement) : null) : null;
 
   const setTopWidth:
     | ((this: {}, vnode: VnodeDOM<{ tree: ITreeItem[]; options: Partial<ITreeOptions> }, {}>) => any)
