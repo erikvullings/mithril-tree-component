@@ -26,6 +26,13 @@ This repository contains two projects:
 
 ## Changes
 
+### 0.6.0
+
+- Improved drag-n-drop behaviour: drop above or below an item to create a sibling, drop on an item to create a child. Also the cursor now indicates correctly `no-drop` zones.
+- Long lines use `text-overflow: ellipsis`.
+- Adding a child is now done by clicking its parent '+' sign (instead of underneath). The advantage is that the tree does not become longer anymore.
+- The add '+' and delete 'x' action buttons are swapped, so when adding multiple children, the add symbol keeps the same position.
+
 ### 0.5.2
 
 - Publishing two libraries: `mithril-tree-component.js` and `mithril-tree-component.mjs`, the latter using ES modules.
