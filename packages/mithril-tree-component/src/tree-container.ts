@@ -133,6 +133,7 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
 
     /** Create a new tree item. */
     const createTreeItem = (pId: string | number = '') => {
+      console.warn('create');
       const create = () => {
         if (options.create) {
           const parent = find(pId);
@@ -236,20 +237,10 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
     } as Attributes;
 
     const hasChildren = (treeItem: ITreeItem) => state.tree && state.tree.some(ti => ti[parentId] === treeItem[id]);
-    // treeItem[children] && treeItem[children].length;
 
     const addChildren = (treeItem: ITreeItem) => {
-      // if (!hasChildren(treeItem)) {
-      //   treeItem[children] = [];
-      //   if (isOpen) {
-      //     treeItem[isOpen] = true;
-      //   }
       createTreeItem(treeItem[id]);
-      // }
     };
-
-    // const childIsSelected = (treeItem: ITreeItem) =>
-    //   state.selectedId && findChildren(treeItem).filter(ti => ti[id] === state.selectedId).length > 0;
 
     const isExpanded = (treeItem: ITreeItem, isOpened: boolean) =>
       hasChildren(treeItem) && ((isOpen && treeItem[isOpen]) || isOpened);
@@ -295,6 +286,7 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       if (!state.tree || !options || !dragOptions) {
         return undefined;
       }
+      const { _createItem, placeholder, editable: { canUpdate, canCreate }, id, multipleRoots } = options;
       const isEmpty = state.tree.length === 0;
       return isEmpty
         ? m(
@@ -302,13 +294,13 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
             m(
               'span.mtc__act.mtc__header',
               {
-                onclick: () => options._createItem(),
+                onclick: () => _createItem(),
               },
-              [m('span', '✚'), m('i', options.placeholder)]
+              [m('span', '✚'), m('i', placeholder)]
             )
           )
         : m(
-            `.mtc[draggable=${options.editable.canUpdate}]`,
+            `.mtc[draggable=${canUpdate}]`,
             { ...dragOptions },
             m('ul.mtc__branch', [
               ...state.tree
@@ -319,18 +311,18 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
                     options,
                     dragOptions,
                     selectedId: state.selectedId,
-                    key: item[options.id],
+                    key: item[id],
                   })
                 ),
-              m(
-                'li',
-                m(
-                  '.mtc__item.mtc__clickable',
-                  options.editable.canCreate && options.multipleRoots
-                    ? m('.mtc__indent', m(TreeButton, { buttonName: 'create', onclick: () => options._createItem() }))
-                    : ''
-                )
-              ),
+              canCreate && multipleRoots
+                ? m(
+                    'li.mtc__new_root',
+                    m(
+                      '.mtc__item.mtc__clickable',
+                      m('.mtc__indent', m(TreeButton, { buttonName: 'create', onclick: () => _createItem() }))
+                    )
+                  )
+                : undefined,
             ])
           );
     },

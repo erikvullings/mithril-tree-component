@@ -29,7 +29,7 @@ export interface ITreeButtonOptions extends Attributes {
 export const TreeButton: FactoryComponent<ITreeButtonOptions> = () => {
   const textSymbol = (buttonName: TreeItemAction) => {
     switch (buttonName) {
-      case 'add_children':
+      case 'add_child':
       case 'create':
         return '✚';
       case 'delete':

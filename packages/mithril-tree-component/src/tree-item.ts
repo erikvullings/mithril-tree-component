@@ -17,6 +17,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
     isOpen: false,
   } as {
     isOpen: boolean;
+    open: (treeItem: ITreeItem, isExpanded: boolean) => void;
     toggle: (treeItem: ITreeItem) => void;
   };
 
@@ -34,27 +35,36 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
           }
         }
       };
+      tiState.open = (treeItem: ITreeItem, isExpanded: boolean) => {
+        if (isExpanded) {
+          return;
+        }
+        if (isOpen) {
+          treeItem[isOpen] = true;
+        } else if (!tiState.isOpen) {
+          tiState.isOpen = true;
+        }
+      };
     },
     view: ({ attrs }) => {
       const { item, options, dragOptions, selectedId } = attrs;
       const {
         id,
-        isOpen,
         treeItemView,
         _findChildren,
         _isExpanded,
         _addChildren,
         _hasChildren,
         _depth,
-        _createItem,
         onSelect,
         onDelete,
-        editable,
+        editable: { canUpdate, canCreate, canDelete, canDeleteParent },
         maxDepth,
       } = options;
-      const { toggle } = tiState;
+      const { toggle, open, isOpen } = tiState;
+      const isExpanded = _isExpanded(item, isOpen);
       const hasChildren = _hasChildren(item);
-      return m(`li[id=${TreeItemIdPrefix}${item[id]}][draggable=${options.editable.canUpdate}]`, dragOptions, [
+      return m(`li[id=${TreeItemIdPrefix}${item[id]}][draggable=${canUpdate}]`, dragOptions, [
         m(
           '.mtc__item',
           {
@@ -72,32 +82,32 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
               [
                 hasChildren
                   ? m(TreeButton, {
-                      buttonName: (isOpen && item[isOpen]) || tiState.isOpen ? 'expand_less' : 'expand_more',
+                      buttonName: isExpanded ? 'expand_less' : 'expand_more',
                       onclick: () => toggle(item),
                     })
                   : undefined,
                 m(
                   'span.mtc__item-title',
-                  { class: `${editable.canUpdate ? 'mtc__moveable' : ''} ${hasChildren ? '' : 'mtc__childless-item'}` },
+                  { class: `${canUpdate ? 'mtc__moveable' : ''} ${hasChildren ? '' : 'mtc__childless-item'}` },
                   m(treeItemView, { treeItem: item, depth: _depth(item) })
                 ),
               ],
               m('.mtc__act-group', [
-                editable.canCreate && !_hasChildren(item) && _depth(item) < maxDepth
+                canCreate && _depth(item) < maxDepth
                   ? m(TreeButton, {
-                      buttonName: 'add_children',
+                      buttonName: 'add_child',
                       onclick: () => {
                         _addChildren(item);
-                        tiState.isOpen = true;
+                        open(item, isExpanded);
                       },
                     })
                   : '',
-                editable.canDelete && (editable.canDeleteParent || !_hasChildren(item))
+                canDelete && (canDeleteParent || !hasChildren)
                   ? m(TreeButton, { buttonName: 'delete', onclick: () => onDelete(item) })
                   : '',
               ])
             ),
-            _isExpanded(item, tiState.isOpen)
+            isExpanded
               ? m('ul.mtc__item-body', [
                   // ...item[children].map((i: ITreeItem) =>
                   ..._findChildren(item).map((i: ITreeItem) =>
@@ -109,12 +119,6 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                       key: i[id],
                     })
                   ),
-                  options.editable.canCreate
-                    ? m(
-                        'li',
-                        m('.mtc__indent', m(TreeButton, { buttonName: 'create', onclick: () => _createItem(item[id]) }))
-                      )
-                    : '',
                 ])
               : '',
           ]

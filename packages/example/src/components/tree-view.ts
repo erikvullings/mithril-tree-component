@@ -108,10 +108,10 @@ export const TreeView = () => {
       // console.log('Drawing the view...');
       return m('.row', [
         m('.col.s6', [
-          m('h3', 'Readonly'),
-          m(TreeContainer, { tree, options }),
           m('h3', 'CRUD'),
           m(TreeContainer, { tree, options: options2 }),
+          m('h3', 'Readonly'),
+          m(TreeContainer, { tree, options }),
           m('h3', 'Own view, maxDepth 3'),
           m(TreeContainer, { tree, options: options3 }),
           m('h3', 'CRUD, isOpen undefined'),

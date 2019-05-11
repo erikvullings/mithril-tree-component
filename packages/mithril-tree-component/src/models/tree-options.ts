@@ -2,7 +2,7 @@ import { Component, Attributes } from 'mithril';
 import { ITreeItem } from '.';
 
 /** Indicates the type of action is performed on the tree item. */
-export type TreeItemAction = 'create' | 'delete' | 'add_children' | 'expand_more' | 'expand_less';
+export type TreeItemAction = 'create' | 'delete' | 'add_child' | 'expand_more' | 'expand_less';
 
 /** Indicates the type of UPDATE action is performed on the tree item. */
 export type TreeItemUpdateAction = 'edit' | 'move';
