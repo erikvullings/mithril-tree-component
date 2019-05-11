@@ -6,6 +6,7 @@ import { TreeButton } from './utils';
 export const TreeItemIdPrefix = 'tree-item-';
 
 interface ITreeItemAttributes {
+  width: number;
   item: ITreeItem;
   options: IInternalTreeOptions;
   selectedId?: string | number;
@@ -46,8 +47,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
         }
       };
     },
-    view: ({ attrs }) => {
-      const { item, options, dragOptions, selectedId } = attrs;
+    view: ({ attrs: { item, options, dragOptions, selectedId, width } }) => {
       const {
         id,
         treeItemView,
@@ -64,6 +64,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
       const { toggle, open, isOpen } = tiState;
       const isExpanded = _isExpanded(item, isOpen);
       const hasChildren = _hasChildren(item);
+      const depth = _depth(item);
       return m(`li[id=${TreeItemIdPrefix}${item[id]}][draggable=${canUpdate}]`, dragOptions, [
         m(
           '.mtc__item',
@@ -87,20 +88,23 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                     })
                   : undefined,
                 m(
-                  'span.mtc__item-title',
-                  { class: `${canUpdate ? 'mtc__moveable' : ''} ${hasChildren ? '' : 'mtc__childless-item'}` },
-                  m(treeItemView, { treeItem: item, depth: _depth(item) })
+                  '.mtc__item-title',
+                  {
+                    class: `${canUpdate ? 'mtc__moveable' : ''} ${hasChildren ? '' : 'mtc__childless-item'}`,
+                    style: `max-width: ${width - 64 - 12 * depth}px`,
+                  },
+                  m(treeItemView, { treeItem: item, depth, width })
                 ),
               ],
               m('.mtc__act-group', [
                 canDelete && (canDeleteParent || !hasChildren)
                   ? m(TreeButton, { buttonName: 'delete', onclick: () => onDelete(item) })
                   : '',
-                canCreate && _depth(item) < maxDepth
+                canCreate && depth < maxDepth
                   ? m(TreeButton, {
                       buttonName: 'add_child',
                       onclick: () => {
-                        _addChildren(item);
+                        _addChildren(item, width);
                         open(item, isExpanded);
                       },
                     })
@@ -112,6 +116,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                   // ...item[children].map((i: ITreeItem) =>
                   ..._findChildren(item).map((i: ITreeItem) =>
                     m(TreeItem, {
+                      width,
                       item: i,
                       options,
                       dragOptions,

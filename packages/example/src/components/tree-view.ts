@@ -55,14 +55,17 @@ export const TreeView = () => {
     ...options,
     maxDepth: 3,
     treeItemView: {
-      view: ({ attrs }) =>
+      view: ({
+        attrs: {
+          depth,
+          treeItem: { title, description },
+          width,
+        },
+      }) =>
         m(
-          'div',
-          {
-            style: 'display: inline-block; vertical-align: middle; line-height: 1.5rem; white-space: nowrap;',
-          },
-          m('div', { style: 'font-weight: bold;' }, `Depth ${attrs.depth}: ${attrs.treeItem.title}`),
-          m('div', { style: 'font-style: italic;' }, attrs.treeItem.description || '...')
+          'div', { style: `max-width: ${width}px` },
+          m('div', { style: 'font-weight: bold; margin-right: 1rem' }, `Depth ${depth}: ${title}`),
+          m('div', { style: 'font-style: italic;' }, description || '...')
         ),
     } as Component<ITreeItemViewComponent>,
   } as ITreeOptions;

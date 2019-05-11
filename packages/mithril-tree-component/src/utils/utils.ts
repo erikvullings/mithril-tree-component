@@ -44,7 +44,7 @@ export const TreeButton: FactoryComponent<ITreeButtonOptions> = () => {
     switch (buttonName) {
       case 'expand_more':
       case 'expand_less':
-        return 'span.mtc__clickable.mtc__collapse-expand-item';
+        return '.mtc__clickable.mtc__collapse-expand-item';
       default:
         return '.mtc__act';
     }

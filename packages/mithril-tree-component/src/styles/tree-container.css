@@ -1,4 +1,4 @@
-.mtc mtc__clearfix::after {
+.mtc .mtc__clearfix::after {
   content: '';
   clear: both;
   display: table;
@@ -11,6 +11,7 @@
   border-radius: 2px;
   overflow: hidden;
   position: relative;
+  white-space: nowrap;
 }
 .mtc.mtc__empty {
   padding: 1em 0;
@@ -21,15 +22,15 @@
 }
 
 .mtc .mtc__collapse-expand-item {
-  margin: 0 10px;
+  margin: 0 0.6rem;
 }
 
 .mtc .mtc__childless-item {
-  margin-left: 34px;
+  margin-left: 2rem;
 }
 
 .mtc .mtc__indent {
-  margin: 0 28px;
+  margin: 0 1.5rem;
 }
 
 .mtc .mtc__moveable {
@@ -40,6 +41,19 @@
   cursor: pointer;
 }
 
+.mtc .mtc__header {
+  line-height: 2rem;
+  width: 100%;
+}
+
+.mtc .mtc__act-group,
+.mtc .mtc__header div {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}
+
 .mtc .mtc__header.active {
   background: #e0e0e0;
 }
@@ -47,11 +61,6 @@
 .mtc .mtc__header:focus {
   color: blue;
   background-color: #cf5c3f;
-}
-
-.mtc .mtc__header {
-  line-height: 36px;
-  width: 100%;
 }
 
 .mtc .mtc__header a {

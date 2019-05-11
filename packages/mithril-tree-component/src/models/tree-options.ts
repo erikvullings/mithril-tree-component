@@ -8,6 +8,7 @@ export type TreeItemAction = 'create' | 'delete' | 'add_child' | 'expand_more' |
 export type TreeItemUpdateAction = 'edit' | 'move';
 
 export interface ITreeItemViewComponent {
+  width: number;
   treeItem: ITreeItem;
   depth: number;
 }
@@ -55,7 +56,7 @@ export interface ITreeOptions {
    * Factory function that can be used to create new items. If there is no parent, the depth is -1.
    * If parent treeItem is missing, a root item should be created.
    */
-  create: (parent?: ITreeItem, depth?: number) => ITreeItem | Promise<ITreeItem>;
+  create: (parent?: ITreeItem, depth?: number, width?: number) => ITreeItem | Promise<ITreeItem>;
   /** Does the tree support editing, e.g. creating, deleting or updating. */
   editable: Partial<{
     /** Allow creating of new items. */
@@ -81,10 +82,10 @@ export interface IInternalTreeOptions extends ITreeOptions {
   _find: (id: string | number) => ITreeItem | undefined;
   _findChildren: (treeItem: ITreeItem) => ITreeItem[];
   /** Internal function: creates a sibling tree item  */
-  _createItem: (siblingId?: string | number) => void;
+  _createItem: (siblingId?: string | number, width?: number) => void;
   _deleteItem: (id?: string | number) => void;
   _hasChildren: (treeItem: ITreeItem) => boolean;
-  _addChildren: (treeItem: ITreeItem) => void;
+  _addChildren: (treeItem: ITreeItem, width?: number) => void;
   _depth: (treeItem: ITreeItem, curDepth?: number) => number;
   _isExpanded: (treeItem: ITreeItem, isOpened: boolean) => boolean;
 }

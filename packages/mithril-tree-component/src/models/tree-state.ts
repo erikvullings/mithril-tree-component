@@ -14,4 +14,6 @@ export interface ITreeState {
   options: IInternalTreeOptions;
   /** Options for dragging */
   dragOptions: Attributes;
+  /** Width of the item */
+  width: number;
 }
