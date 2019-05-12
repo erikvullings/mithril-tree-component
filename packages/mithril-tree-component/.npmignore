@@ -9,3 +9,7 @@ yarn.lock
 tsconfig.json
 tslint.json
 *.logs
+.rpt2_cache
+cssnano.config.js
+rollup.config.js
+img
