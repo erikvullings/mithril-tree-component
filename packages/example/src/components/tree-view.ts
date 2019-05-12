@@ -13,10 +13,16 @@ export const TreeView = () => {
     { id: 1, parentId: 0, title: 'My id is 1', description: 'Description of item 1.' },
     { id: 2, parentId: 1, title: 'My id is 2', description: 'Description of item 2.' },
     { id: 3, parentId: 1, title: 'My id is 3', description: 'Description of item 3.' },
-    { id: 4, parentId: 2, title: 'My very very very very very long id is 4', description: 'Description of item 4.' },
-    { id: 5, parentId: 0, title: 'My id is 5', description: 'Description of item 5.' },
+    {
+      id: 4,
+      parentId: 2,
+      title: 'I have a very long title which should be displayed using ellipses if everything works as expected',
+      description: 'Description of item 4.',
+    },
+    { id: 5, parentId: 0, title: 'My id is 5 - I am not a drop target', description: 'Items cannot be dropped on me.' },
     { id: 6, parentId: 0, title: 'My id is 6', description: 'Description of item 6.' },
-    { id: 7, parentId: 4, title: 'My id is 7', description: 'Description of item 7.' },
+    { id: 7, parentId: 0, title: 'My id is 7', description: 'Description of item 7.' },
+    { id: 8, parentId: 4, title: 'My id is 8', description: 'Description of item 8.' },
   ];
   const emptyTree: IMyTree[] = [];
   const tree = data;
@@ -31,8 +37,12 @@ export const TreeView = () => {
     onCreate: ti => console.log(`On create ${ti.title}`),
     onBeforeDelete: ti => console.log(`On before delete ${ti.title}`),
     onDelete: ti => console.log(`On delete ${ti.title}`),
-    onBeforeUpdate: (ti, action, newParent) =>
-      console.log(`On before ${action} update ${ti.title} to ${newParent ? newParent.title : ''}.`),
+    onBeforeUpdate: (ti, action, newParent) => {
+      console.log(`On before ${action} update ${ti.title} to ${newParent ? newParent.title : ''}.`);
+      const result = newParent && newParent.id === 5 ? false : true;
+      console.warn(result ? 'Drop allowed' : 'Drop not allowed');
+      return result;
+    },
     onUpdate: ti => console.log(`On update ${ti.title}`),
     create: (parent?: IMyTree) => {
       const item = {} as IMyTree;
@@ -46,13 +56,13 @@ export const TreeView = () => {
     editable: { canCreate: false, canDelete: false, canUpdate: false, canDeleteParent: false },
   } as Partial<ITreeOptions>;
 
-  const options2 = {
+  const optionsCRUD = {
     ...options,
     placeholder: 'Create a new tree item',
     editable: { canCreate: true, canDelete: true, canUpdate: true, canDeleteParent: false },
   };
 
-  const options3 = {
+  const optionsOwnView = {
     ...options,
     maxDepth: 3,
     treeItemView: {
@@ -64,20 +74,21 @@ export const TreeView = () => {
         },
       }) =>
         m(
-          'div', { style: `max-width: ${width - 32}px` },
+          'div',
+          { style: `max-width: ${width - 32}px` },
           m('div', { style: 'font-weight: bold; margin-right: 1rem' }, `Depth ${depth}: ${title}`),
           m('div', { style: 'font-style: italic;' }, description || '...')
         ),
     } as Component<ITreeItemViewComponent>,
   } as ITreeOptions;
 
-  const options4 = {
+  const optionsCRUDisOpen = {
     ...options,
     isOpen: undefined,
     editable: { canCreate: true, canDelete: true, canUpdate: true, canDeleteParent: false },
   } as ITreeOptions;
 
-  const options5 = {
+  const optionsAsync = {
     ...options,
     isOpen: undefined,
     editable: { canCreate: true, canDelete: true, canUpdate: true, canDeleteParent: false },
@@ -113,17 +124,17 @@ export const TreeView = () => {
       return m('.row', [
         m('.col.s6', [
           m('h3', 'CRUD'),
-          m(TreeContainer, { tree, options: options2 }),
+          m(TreeContainer, { tree, options: optionsCRUD }),
           m('h3', 'Readonly'),
           m(TreeContainer, { tree, options }),
           m('h3', 'Own view, maxDepth 3'),
-          m(TreeContainer, { tree, options: options3 }),
+          m(TreeContainer, { tree, options: optionsOwnView }),
           m('h3', 'CRUD, isOpen undefined'),
-          m(TreeContainer, { tree, options: options4 }),
+          m(TreeContainer, { tree, options: optionsCRUDisOpen }),
           m('h3', 'CRUD, async. create and delete'),
-          m(TreeContainer, { tree, options: options5 }),
+          m(TreeContainer, { tree, options: optionsAsync }),
           m('h3', 'CRUD, empty tree'),
-          m(TreeContainer, { tree: emptyTree, options: options2 }),
+          m(TreeContainer, { tree: emptyTree, options: optionsCRUD }),
         ]),
         m('.col.s6', [
           m(
