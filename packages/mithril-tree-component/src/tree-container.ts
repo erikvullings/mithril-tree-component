@@ -133,7 +133,6 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
 
     /** Create a new tree item. */
     const createTreeItem = (pId: string | number = '', width: number) => {
-      console.warn('create');
       const create = (w: number) => {
         if (options.create) {
           const parent = find(pId);
@@ -189,6 +188,19 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       return { tiSource: undefined, tiTarget: undefined, sourceId: undefined, targetId: undefined };
     };
 
+    const isValidTarget = (
+      target: HTMLElement,
+      ev: DragEvent,
+      dropLocation: 'above' | 'below' | 'as_child' = computeDropLocation(target, ev)
+    ) => {
+      const { sourceId, targetId, tiSource, tiTarget } = dndTreeItems(target, ev);
+      const parent = dropLocation === 'as_child' || !tiTarget ? tiTarget : find(tiTarget[parentId]);
+      return (
+        targetId !== sourceId &&
+        (!opts.onBeforeUpdate || (tiSource && opts.onBeforeUpdate(tiSource, 'move', parent) === true))
+      );
+    };
+
     const dragOpts = {
       ondrop: (ev: DragEvent) => {
         if (!ev.dataTransfer || !ev.target) {
@@ -204,14 +216,11 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
         ev.preventDefault(); // do not open a link
         const { sourceId, targetId, tiSource, tiTarget } = dndTreeItems(target, ev);
         const dropLocation = computeDropLocation(parent, ev);
-        log(`Dropping ${sourceId} ${dropLocation} ${targetId}`);
-        if (sourceId === targetId) {
+        if (!isValidTarget(target, ev, dropLocation)) {
           return false;
         }
+        log(`Dropping ${sourceId} ${dropLocation} ${targetId}`);
         if (tiSource && tiTarget) {
-          if (opts.onBeforeUpdate && opts.onBeforeUpdate(tiSource, 'move', tiTarget) === false) {
-            return false;
-          }
           tiSource[parentId] = tiTarget[dropLocation === 'as_child' ? id : parentId];
           if (state.tree) {
             const sourceIndex = state.tree && state.tree.indexOf(tiSource);
@@ -238,31 +247,34 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
         }
       },
       ondragover: (ev: DragEvent) => {
-        const target = ev.target as HTMLElement;
-        const sourceId = state.dragId;
-        const targetId = findId(target) || '';
         (ev as any).redraw = false;
-        if (targetId && sourceId !== targetId) {
-          ev.preventDefault();
-          const parent = findParent(target);
-          if (parent) {
-            const dropLocation = computeDropLocation(parent, ev);
-            parent.classList.remove('mtc__above', 'mtc__below', 'mtc__as_child');
+        const target = ev.target as HTMLElement;
+        const parent = findParent(target);
+        if (parent) {
+          parent.classList.remove('mtc__above', 'mtc__below', 'mtc__as_child');
+          const dropLocation = computeDropLocation(parent, ev);
+          if (isValidTarget(target, ev, dropLocation)) {
+            ev.preventDefault();
             parent.classList.add('mtc__' + dropLocation);
+            target.style.cursor = isValidTarget(target, ev, dropLocation) ? 'inherit' : 'no_drop';
           }
+        } else {
+          target.style.cursor = 'no_drop';
         }
       },
-      ondragenter: (ev: DragEvent) => {
-        const target = ev.target as HTMLElement;
-        const { sourceId, targetId, tiSource, tiTarget } = dndTreeItems(target, ev);
-        const disallowDrop =
-          targetId === sourceId ||
-          (tiSource && opts.onBeforeUpdate && opts.onBeforeUpdate(tiSource, 'move', tiTarget) === false);
-        target.style.cursor = disallowDrop ? 'no-drop' : '';
-      },
+      // ondragenter: (ev: DragEvent) => {
+      //   const target = ev.target as HTMLElement;
+      //   const { sourceId, targetId, tiSource, tiTarget } = dndTreeItems(target, ev);
+      //   const disallowDrop =
+      //     targetId === sourceId ||
+      //     (tiSource && opts.onBeforeUpdate && opts.onBeforeUpdate(tiSource, 'move', tiTarget) === false);
+      //   target.style.cursor = disallowDrop ? 'no-drop' : '';
+      // },
       ondragleave: (ev: DragEvent) => {
         const target = ev.target as HTMLElement;
-        target.style.cursor = '';
+        if (target && target.style) {
+          target.style.cursor = 'inherit';
+        }
         const parent = findParent(target);
         if (parent) {
           parent.classList.remove('mtc__above', 'mtc__below', 'mtc__as_child');
