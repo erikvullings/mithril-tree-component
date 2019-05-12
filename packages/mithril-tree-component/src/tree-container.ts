@@ -179,7 +179,7 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
 
     const dndTreeItems = (target: HTMLElement, ev: DragEvent) => {
       if (ev.dataTransfer) {
-        const sourceId = convertId(ev.dataTransfer.getData('text').replace(TreeItemIdPrefix, ''));
+        const sourceId = convertId(state.dragId || ev.dataTransfer.getData('text').replace(TreeItemIdPrefix, ''));
         const targetId = convertId((findId(target) || '').replace(TreeItemIdPrefix, ''));
         const tiSource = find(sourceId);
         const tiTarget = find(targetId);
@@ -283,11 +283,12 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       ondragstart: (ev: DragEvent) => {
         const target = ev.target;
         (ev as any).redraw = false;
+        state.dragId = '';
         if (target && ev.dataTransfer) {
           state.isDragging = true;
           ev.dataTransfer.setData('text', (target as any).id);
           ev.dataTransfer.effectAllowed = 'move';
-          state.dragId = (target as any).id;
+          state.dragId = (target as any).id.replace(TreeItemIdPrefix, '');
           log('Drag start: ' + ev.dataTransfer.getData('text'));
         }
       },
