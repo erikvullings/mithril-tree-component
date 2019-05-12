@@ -11,7 +11,7 @@ import cssnano from 'cssnano';
 import { terser } from 'rollup-plugin-terser';
 
 const pkg = require('./package.json');
-const production = process.env.BUILD === 'production';
+const production = !process.env.ROLLUP_WATCH;
 
 export default {
   input: `src/index.ts`,
@@ -65,6 +65,6 @@ export default {
     // Resolve source maps to the original source
     sourceMaps(),
     // minifies generated bundles
-    production ? terser() : undefined,
+    production && terser(),
   ],
 };
