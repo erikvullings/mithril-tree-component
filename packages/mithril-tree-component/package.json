@@ -10,7 +10,7 @@
     "link": "npm link",
     "start": "rollup -c -w",
     "build": "npm run build:production",
-    "build:production": "rm -fr ./dist && rollup -c",
+    "build:production": "rm -fr ./dist && rollup -c --environment BUILD:production",
     "build:domain": "typedoc --out ../../docs/typedoc src",
     "patch-release": "npm run build && npm version patch --force -m \"Patch release\" && npm publish && git push --follow-tags",
     "minor-release": "npm run build && npm version minor --force -m \"Minor release\" && npm publish && git push --follow-tags",
