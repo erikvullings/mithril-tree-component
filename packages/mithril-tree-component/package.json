@@ -1,6 +1,6 @@
 {
   "name": "mithril-tree-component",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "A tree component for the Mitrhil framework.",
   "main": "dist/mithril-tree-component.js",
   "module": "dist/mithril-tree-component.mjs",
