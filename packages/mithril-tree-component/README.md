@@ -26,7 +26,11 @@ This repository contains two projects:
 
 ## Changes
 
-### 0.6.0
+### 0.6.1 No breaking changes
+
+- Fixed `onBeforeUpdate` checks, so the code using this library can determine whether a drop is valid.
+
+### 0.6.0 No breaking changes
 
 - Improved drag-n-drop behaviour: drop above or below an item to create a sibling, drop on an item to create a child. Also the cursor now indicates correctly `no-drop` zones.
 - Long lines use `text-overflow: ellipsis`.
