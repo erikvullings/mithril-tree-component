@@ -51,7 +51,7 @@
   display: inline-block;
   overflow: hidden;
   text-overflow: ellipsis;
-  vertical-align: bottom;
+  vertical-align: middle;
 }
 
 .mtc .mtc__header.active {
