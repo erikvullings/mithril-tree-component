@@ -26,6 +26,10 @@ This repository contains two projects:
 
 ## Changes
 
+### 0.6.4 No breaking changes
+
+- Fixed: Do not crash when `onCreate` is not defined.
+
 ### 0.6.1 No breaking changes
 
 - Fixed `onBeforeUpdate` checks, so the code using this library can determine whether a drop is valid.

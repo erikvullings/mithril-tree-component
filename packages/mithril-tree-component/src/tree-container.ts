@@ -127,7 +127,9 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       opts.onBeforeCreate,
       (treeItem: ITreeItem) => {
         onSelect(treeItem, true);
-        opts.onCreate(treeItem);
+        if (opts.onCreate) {
+          opts.onCreate(treeItem);
+        }
       }
     );
 
