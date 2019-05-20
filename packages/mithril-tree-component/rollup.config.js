@@ -65,6 +65,6 @@ export default {
     // Resolve source maps to the original source
     sourceMaps(),
     // minifies generated bundles
-    production && terser({ sourceMaps: true }),
+    production && terser({ sourcemaps: true }),
   ],
 };
