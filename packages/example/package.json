@@ -5,6 +5,7 @@
   "description": "Example project, showing how to use the Mitrhil tree component.",
   "main": "index.js",
   "scripts": {
+    "clean": "rimraf ./.cache ./dist",
     "link": "npm link mithril-tree-component",
     "start": "parcel index.html",
     "build": "parcel build index.html --out-dir ../../docs --public-url https://erikvullings.github.io/mithril-tree-component",
@@ -28,13 +29,14 @@
   "homepage": "https://github.com/erikvullings/mithril-tree-component#readme",
   "dependencies": {
     "materialize-css": "^1.0.0",
-    "mithril": "next",
-    "mithril-tree-component": "^0.5.0"
+    "mithril": "^v2.0.0-rc.7",
+    "mithril-tree-component": "^0.6.4"
   },
   "devDependencies": {
-    "@types/mithril": "^1.1.16",
-    "autoprefixer": "^9.5.1",
+    "@types/mithril": "github:MithrilJS/mithril.d.ts#v2",
+    "rimraf": "^2.6.3",
+    "autoprefixer": "^9.6.1",
     "parcel-bundler": "^1.12.3",
-    "typescript": "^3.4.5"
+    "typescript": "^3.5.2"
   }
 }
