@@ -398,12 +398,13 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
                 canCreate && multipleRoots
                   ? m(
                       'li.mtc__new_root',
+                      { key: -1 },
                       m(
                         '.mtc__item.mtc__clickable',
                         m('.mtc__indent', m(TreeButton, { buttonName: 'create', onclick: () => _createItem() }))
                       )
                     )
-                  : undefined,
+                  : m.fragment({ key: -1 }, ''),
               ])
             )
       );
