@@ -7,11 +7,10 @@
   "browser": "dist/mithril-tree-component.mjs",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "preinstall": "rimraf ./node_modules/.ignored",
     "link": "npm link",
     "start": "rollup -c -w",
     "build": "npm run build:production",
-    "clean": "rimraf ./dist",
+    "clean": "rimraf ./dist ./node_modules/.ignored",
     "build:production": "npm run clean && rollup -c",
     "build:domain": "typedoc --out ../../docs/typedoc src",
     "patch-release": "npm run build && npm version patch --force -m \"Patch release\" && npm publish && git push --follow-tags",
