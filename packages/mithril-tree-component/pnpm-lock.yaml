@@ -2,6 +2,8 @@ devDependencies:
   '@types/mithril': github.com/MithrilJS/mithril.d.ts/b5a1d389c2e83bdc6351c2d1cb3d909674644af1
   autoprefixer: 9.7.3
   cssnano: 4.1.10
+  lodash.template: 4.5.0
+  mixin-deep: 2.0.1
   postcss-cssnext: 3.1.0
   postcss-nested: 4.2.1
   postcss-simple-vars: 5.0.2
@@ -14,6 +16,7 @@ devDependencies:
   rollup-plugin-sourcemaps: 0.4.2_rollup@1.27.14
   rollup-plugin-terser: 5.1.3_rollup@1.27.14
   rollup-plugin-typescript2: 0.25.3_rollup@1.27.14+typescript@3.7.4
+  set-value: 3.0.1
   tslib: 1.10.0
   typedoc: 0.15.6
   typescript: 3.7.4
@@ -1446,6 +1449,13 @@ packages:
     dev: true
     resolution:
       integrity: sha1-5zoDhcg1VZF0bgILmWecaQ5o+6A=
+  /lodash.template/4.5.0:
+    dependencies:
+      lodash._reinterpolate: 3.0.0
+      lodash.templatesettings: 4.1.0
+    dev: true
+    resolution:
+      integrity: sha512-84vYFxIkmidUiFxidA/KjjH9pAycqW+h980j7Fuz5qxRtO9pgB7MDFTdys1N7A5mcucRiDyEq4fusljItR1T/A==
   /lodash.templatesettings/4.1.0:
     dependencies:
       lodash._reinterpolate: 3.0.0
@@ -1556,6 +1566,12 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-8ZItLHeEgaqEvd5lYBXfm4EZSFCX29Jb9K+lAHhDKzReKBQKj3R+7NOF6tjqYi9t4oI8VUfaWITJQm86wnXGNQ==
+  /mixin-deep/2.0.1:
+    dev: true
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-imbHQNRglyaplMmjBLL3V5R6Bfq5oM+ivds3SKgc6oRtzErEnBUUc5No11Z2pilkUvl42gJvi285xTNswcKCMA==
   /mkdirp/0.5.1:
     dependencies:
       minimist: 0.0.8
@@ -2813,6 +2829,14 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-hw0yxk9GT/Hr5yJEYnHNKYXkIA8mVJgd9ditYZCe16ZczcaELYYcfvaXesNACk2O8O0nTiPQcQhGUQj8JLzeeg==
+  /set-value/3.0.1:
+    dependencies:
+      is-plain-object: 2.0.4
+    dev: true
+    engines:
+      node: '>=6.0'
+    resolution:
+      integrity: sha512-w6n3GUPYAWQj4ZyHWzD7K2FnFXHx9OTwJYbWg+6nXjG8sCLfs9DGv+KlqglKIIJx+ks7MlFuwFW2RBPb+8V+xg==
   /shelljs/0.8.3:
     dependencies:
       glob: 7.1.4
@@ -3203,6 +3227,8 @@ specifiers:
   '@types/mithril': 'github:MithrilJS/mithril.d.ts#v2'
   autoprefixer: ^9.7.3
   cssnano: ^4.1.10
+  lodash.template: '>=4.5.0'
+  mixin-deep: '>=1.3.2'
   postcss-cssnext: ^3.1.0
   postcss-nested: ^4.2.1
   postcss-simple-vars: ^5.0.2
@@ -3215,6 +3241,7 @@ specifiers:
   rollup-plugin-sourcemaps: ^0.4.2
   rollup-plugin-terser: ^5.1.3
   rollup-plugin-typescript2: ^0.25.3
+  set-value: '>=2.0.1'
   tslib: ^1.10.0
   typedoc: ^0.15.6
   typescript: ^3.7.4
