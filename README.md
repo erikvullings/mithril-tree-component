@@ -28,6 +28,8 @@ This repository contains two projects:
 
 ## Installation
 
+The tree component is available on [npm](https://www.npmjs.com/package/mithril-tree-component) or can be used directly from [unpkg](https://unpkg.com/mithril-tree-component).
+
 ```bash
 npm i mithril-tree-component
 ```
