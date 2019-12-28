@@ -26,6 +26,12 @@ This repository contains two projects:
 - An example project, showcasing the usage of the component.
 - The mithril-tree-component itself.
 
+## Installation
+
+```bash
+npm i mithril-tree-component
+```
+
 ## Usage
 
 ```bash
@@ -88,6 +94,16 @@ export const TreeView = () => {
       ]),
   };
 };
+```
+
+## Development
+
+I prefer to use [pnpm](https://pnpm.js.org/) to install all libs only once on my PC, so if you aren't using it yet, please try it out.
+
+```bash
+npm i -g pnpm
+pnpm m i
+npm start
 ```
 
 ## Contributing
