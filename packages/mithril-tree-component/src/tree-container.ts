@@ -8,7 +8,10 @@ import { ITreeState } from './models/tree-state';
 
 export let log: (...args: any[]) => void = () => undefined;
 
-export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Partial<ITreeOptions> }> = () => {
+export const TreeContainer: FactoryComponent<{
+  tree: ITreeItem[];
+  options: Partial<ITreeOptions>;
+}> = () => {
   const state = {
     selectedId: '',
     dragId: '',
@@ -33,15 +36,9 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
           return;
         }
       }
-      const r = defaultFn(treeItem, action, newParent);
-      if (typeof r === 'function') {
-        await r;
-      }
+      await Promise.resolve(defaultFn(treeItem, action, newParent));
       if (afterFn) {
-        const after = afterFn(treeItem, action, newParent);
-        if (typeof after === 'function') {
-          await after;
-        }
+        await Promise.resolve(afterFn(treeItem, action, newParent));
       }
     };
     const opts = {
@@ -52,13 +49,30 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       maxDepth: Number.MAX_SAFE_INTEGER,
       multipleRoots: true,
       logging: false,
-      editable: { canCreate: false, canDelete: false, canUpdate: false, canDeleteParent: false },
+      editable: {
+        canCreate: false,
+        canDelete: false,
+        canUpdate: false,
+        canDeleteParent: false,
+      },
       placeholder: 'Create your first item',
       ...options,
     } as IInternalTreeOptions;
 
     if (opts.logging) {
       log = console.log;
+    }
+    if (!opts.isOpen) {
+      opts.isOpen = (() => {
+        const store: Record<string, boolean> = {};
+        return (id: string, action: 'get' | 'set', value?: boolean): boolean | void => {
+          if (action === 'get') {
+            return store.hasOwnProperty(id) ? store[id] : false;
+          } else if (typeof value !== 'undefined') {
+            store[id] = value;
+          }
+        };
+      })();
     }
     const { id, parentId, name, isOpen } = opts;
 
@@ -68,7 +82,7 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
         return undefined;
       }
       let found: ITreeItem | undefined;
-      partialTree.some(treeItem => {
+      partialTree.some((treeItem) => {
         if (treeItem[id] === tId) {
           found = treeItem;
           return true;
@@ -87,7 +101,7 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       partialTree.some((treeItem, i) => {
         if (treeItem[id] === tId) {
           partialTree.splice(i, 1);
-          findChildren(treeItem).forEach(ti => deleteTreeItem(ti[id]));
+          findChildren(treeItem).forEach((ti) => deleteTreeItem(ti[id]));
           found = true;
           return true;
         }
@@ -165,6 +179,12 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       }
     };
 
+    const onToggle = (ti: ITreeItem, isExpanded: boolean) => {
+      if (opts.onToggle) {
+        opts.onToggle(ti, isExpanded);
+      }
+    };
+
     const treeItemView = opts.treeItemView || {
       view: ({ attrs: { treeItem } }) => treeItem[name],
     };
@@ -187,7 +207,12 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
         const tiTarget = find(targetId);
         return { tiSource, tiTarget, sourceId, targetId };
       }
-      return { tiSource: undefined, tiTarget: undefined, sourceId: undefined, targetId: undefined };
+      return {
+        tiSource: undefined,
+        tiTarget: undefined,
+        sourceId: undefined,
+        targetId: undefined,
+      };
     };
 
     const isValidTarget = (
@@ -238,7 +263,11 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
             move(state.tree, sourceIndex, newIndex);
           }
           if (dropLocation === 'as_child' && isOpen) {
-            tiTarget[isOpen] = true;
+            if (typeof isOpen === 'function') {
+              isOpen(tiTarget[id], 'set', true);
+            } else {
+              tiTarget[isOpen] = true;
+            }
           }
           if (opts.onUpdate) {
             opts.onUpdate(tiSource, 'move', tiTarget);
@@ -296,17 +325,17 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
       },
     } as Attributes;
 
-    const hasChildren = (treeItem: ITreeItem) => state.tree && state.tree.some(ti => ti[parentId] === treeItem[id]);
+    const hasChildren = (treeItem: ITreeItem) => state.tree && state.tree.some((ti) => ti[parentId] === treeItem[id]);
 
     const addChildren = (treeItem: ITreeItem, width: number) => {
       createTreeItem(treeItem[id], width);
     };
 
-    const isExpanded = (treeItem: ITreeItem, isOpened: boolean) =>
-      hasChildren(treeItem) && ((isOpen && treeItem[isOpen]) || isOpened);
+    const isExpanded = (treeItem: ITreeItem) =>
+      hasChildren(treeItem) && (typeof isOpen === 'function' ? isOpen(treeItem[id], 'get') : treeItem[isOpen]);
 
     const findChildren = (treeItem: ITreeItem) =>
-      state.tree ? state.tree.filter(ti => ti[parentId] === treeItem[id]) : [];
+      state.tree ? state.tree.filter((ti) => ti[parentId] === treeItem[id]) : [];
 
     return {
       dragOptions: dragOpts,
@@ -314,6 +343,7 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
         ...opts,
         treeItemView,
         onSelect,
+        onToggle,
         onCreate,
         onDelete,
         onUpdate,
@@ -384,8 +414,8 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
               { ...dragOptions },
               m('ul.mtc__branch', [
                 ...state.tree
-                  .filter(item => !item[parentId])
-                  .map(item =>
+                  .filter((item) => !item[parentId])
+                  .map((item) =>
                     m(TreeItem, {
                       item,
                       width,
@@ -401,7 +431,13 @@ export const TreeContainer: FactoryComponent<{ tree: ITreeItem[]; options: Parti
                       { key: -1 },
                       m(
                         '.mtc__item.mtc__clickable',
-                        m('.mtc__indent', m(TreeButton, { buttonName: 'create', onclick: () => _createItem() }))
+                        m(
+                          '.mtc__indent',
+                          m(TreeButton, {
+                            buttonName: 'create',
+                            onclick: () => _createItem(),
+                          })
+                        )
                       )
                     )
                   : m.fragment({ key: -1 }, ''),

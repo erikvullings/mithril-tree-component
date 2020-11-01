@@ -14,36 +14,34 @@ interface ITreeItemAttributes {
 }
 
 export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
-  const tiState = {
-    isOpen: false,
-  } as {
-    isOpen: boolean;
+  const tiState = {} as {
     open: (treeItem: ITreeItem, isExpanded: boolean) => void;
-    toggle: (treeItem: ITreeItem) => void;
+    toggle: (treeItem: ITreeItem, onToggle?: (treeItem: ITreeItem, isExpanded: boolean) => void) => void;
   };
 
   return {
     oninit: ({ attrs }) => {
       const { options } = attrs;
-      const { isOpen, _hasChildren } = options;
+      const { isOpen = 'isOpen', id, _hasChildren } = options;
 
-      tiState.toggle = (treeItem: ITreeItem) => {
+      tiState.toggle = (treeItem: ITreeItem, onToggle?: (treeItem: ITreeItem, isExpanded: boolean) => void) => {
         if (_hasChildren(treeItem)) {
-          if (isOpen) {
-            treeItem[isOpen] = !treeItem[isOpen];
+          if (typeof isOpen === 'function') {
+            isOpen(treeItem[id], 'set', !isOpen(treeItem[id], 'get'));
           } else {
-            tiState.isOpen = !tiState.isOpen;
+            treeItem[isOpen] = !treeItem[isOpen];
           }
+          onToggle && onToggle(treeItem, typeof isOpen === 'function' ? isOpen(treeItem[id], 'get') : treeItem[isOpen]);
         }
       };
       tiState.open = (treeItem: ITreeItem, isExpanded: boolean) => {
         if (isExpanded) {
           return;
         }
-        if (isOpen) {
+        if (typeof isOpen === 'function') {
+          isOpen(treeItem[id], 'set', true);
+        } else {
           treeItem[isOpen] = true;
-        } else if (!tiState.isOpen) {
-          tiState.isOpen = true;
         }
       };
     },
@@ -57,12 +55,13 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
         _hasChildren,
         _depth,
         onSelect,
+        onToggle,
         onDelete,
         editable: { canUpdate, canCreate, canDelete, canDeleteParent },
         maxDepth,
       } = options;
-      const { toggle, open, isOpen } = tiState;
-      const isExpanded = _isExpanded(item, isOpen);
+      const { toggle, open } = tiState;
+      const isExpanded = _isExpanded(item);
       const hasChildren = _hasChildren(item);
       const depth = _depth(item);
       return m(
@@ -87,7 +86,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                   hasChildren
                     ? m(TreeButton, {
                         buttonName: isExpanded ? 'expand_less' : 'expand_more',
-                        onclick: () => toggle(item),
+                        onclick: () => toggle(item, onToggle),
                       })
                     : undefined,
                   m(
@@ -101,7 +100,10 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                 ],
                 m('.mtc__act-group', [
                   canDelete && (canDeleteParent || !hasChildren)
-                    ? m(TreeButton, { buttonName: 'delete', onclick: () => onDelete(item) })
+                    ? m(TreeButton, {
+                        buttonName: 'delete',
+                        onclick: () => onDelete(item),
+                      })
                     : '',
                   canCreate && depth < maxDepth
                     ? m(TreeButton, {

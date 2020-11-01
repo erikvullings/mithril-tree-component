@@ -2,7 +2,7 @@
 
 A tree component for [Mithril](https://mithril.js.org) that supports drag-and-drop, as well as selecting, creating and deleting items. You can play with it [here](https://erikvullings.github.io/mithril-tree-component/#!/).
 
-**Functionality:**
+## Functionality
 
 - Drag-and-drop to move items (if `editable.canUpdate` is true).
 - Create and delete tree items (if `editable.canDelete` and `editable.canDeleteParent` is true).
@@ -11,10 +11,25 @@ A tree component for [Mithril](https://mithril.js.org) that supports drag-and-dr
   - `parentId` property: id of the parent.
   - `name` property: display title. Alternatively, provide your own component.
   - `maxDepth`: when specified, and editable.canCreate is true, do not add children that would exceed this depth, where depth is 0 for root items, 1 for children, etc.
-  - `isOpen`: to indicate whether the tree should show the children. If not provided, the open/close state is maintained internally. This slightly affects the behaviour of the tree, e.g. after creating items, the parent is not automatically opened.
-  - `create`: can be used to add your own TreeItem creation logic.
+  - `create`: function to be used to add your own TreeItem creation logic.
+  - `isOpen`: to indicate whether the tree should show the children. By default, when nothing is set, the `treeItem.isOpen` property is used. If `isOpen` is a string, `treeItem[isOpen]` is used instead. In case `isOpen` is `undefined`, the open/close state is maintained internally. Finally, you can also use a function `(id: string, action: 'get' | 'set', value?: boolean) => boolean | void`, in which case you can maintain the open/close state externally, e.g. for synchronization between different components:
+
+```ts
+const isOpen = (() => {
+  const store: Record<string, boolean> = {};
+  return (id: string, action: 'get' | 'set', value?: boolean) => {
+    if (action === 'get') {
+      return store.hasOwnProperty(id) ? store[id] : false;
+    } else if (typeof value !== 'undefined') {
+      store[id] = value;
+    }
+  };
+})();
+```
+
 - Callback events:
   - `onSelect`: when a tree item is selected.
+  - `onToggle`: when a tree item is expanded or closed.
   - `onBefore`[Create | Update | Delete]: can be used to intercept (and block) tree item actions. If the onBeforeX call returns false, the action is stopped.
   - `on[Create | Update | Delete]`: when the creation is done.
   - When using async functions or promises, please make sure to call `m.redraw()` when you are done.
@@ -25,6 +40,11 @@ This repository contains two projects:
 - The mithril-tree-component itself.
 
 ## Changes
+
+### 0.7.0 No breaking changes
+
+- Added `onToggle` callback event.
+- Added option to maintain the open/close tree state externally by setting the `isOpen` property to a function.
 
 ### 0.6.4 No breaking changes
 

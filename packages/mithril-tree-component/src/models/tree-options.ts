@@ -24,7 +24,7 @@ export interface ITreeOptions {
   /** Name of the parent ID property (default 'parentId') */
   parentId: string;
   /** Name of the open property, e.g. to display or hide the children (default 'isOpen') */
-  isOpen: string | undefined;
+  isOpen: string | undefined | ((id: string, action: 'get' | 'set', value?: boolean) => void | boolean);
   /**
    * At what level do you prevent creating new children: 1 is only children, 2 is grandchildren, etc.
    * Default is Number.MAX_SAFE_INTEGER. NOTE: It does not prevent you to move items with children.
@@ -36,6 +36,8 @@ export interface ITreeOptions {
   logging: boolean;
   /** When a tree item is selected, this function is invoked */
   onSelect: (treeItem: ITreeItem, isSelected: boolean) => void | Promise<void>;
+  /** When a tree item is opened (expanded) or closed */
+  onToggle: (treeItem: ITreeItem, isExpanded: boolean) => void | Promise<void>;
   /** Before a tree item is created, this function is invoked. When it returns false, the action is cancelled. */
   onBeforeCreate: (treeItem: ITreeItem) => boolean | void | Promise<boolean>;
   /** When a tree item has been created, this function is invoked */
@@ -87,5 +89,5 @@ export interface IInternalTreeOptions extends ITreeOptions {
   _hasChildren: (treeItem: ITreeItem) => boolean;
   _addChildren: (treeItem: ITreeItem, width?: number) => void;
   _depth: (treeItem: ITreeItem, curDepth?: number) => number;
-  _isExpanded: (treeItem: ITreeItem, isOpened: boolean) => boolean;
+  _isExpanded: (treeItem: ITreeItem) => boolean;
 }
