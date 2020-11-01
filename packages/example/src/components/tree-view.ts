@@ -20,6 +20,8 @@ const isOpen = (() => {
 })();
 
 export const TreeView = () => {
+  let selectedId: string | number = 5;
+
   const data: IMyTree[] = [
     {
       id: 1,
@@ -80,9 +82,15 @@ export const TreeView = () => {
     isOpen,
     name: 'title',
     onToggle: (ti, isExpanded) => console.log(`On toggle: "${ti.title}" is ${isExpanded ? '' : 'not '}expanded.`),
-    onSelect: (ti, isSelected) => console.log(`On ${isSelected ? 'select' : 'unselect'}: ${ti.title}`),
+    onSelect: (ti, isSelected) => {
+      selectedId = ti.id;
+      console.log(`On ${isSelected ? 'select' : 'unselect'}: ${ti.title}`);
+    },
     onBeforeCreate: (ti) => console.log(`On before create ${ti.title}`),
-    onCreate: (ti) => console.log(`On create ${ti.title}`),
+    onCreate: (ti) => {
+      console.log(`On create ${ti.title}`);
+      // selectedId = ti.id;
+    },
     onBeforeDelete: (ti) => console.log(`On before delete ${ti.title}`),
     onDelete: (ti) => console.log(`On delete ${ti.title}`),
     onBeforeUpdate: (ti, action, newParent) => {
@@ -192,7 +200,7 @@ export const TreeView = () => {
       return m('.row', [
         m('.col.s6', [
           m('h3', 'CRUD'),
-          m(TreeContainer, { tree, options: optionsCRUD }),
+          m(TreeContainer, { tree, options: optionsCRUD, selectedId }),
           m('h3', 'Readonly'),
           m(TreeContainer, { tree, options }),
           m('h3', 'Own view, maxDepth 3'),

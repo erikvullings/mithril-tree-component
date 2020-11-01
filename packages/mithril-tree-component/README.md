@@ -12,6 +12,7 @@ A tree component for [Mithril](https://mithril.js.org) that supports drag-and-dr
   - `name` property: display title. Alternatively, provide your own component.
   - `maxDepth`: when specified, and editable.canCreate is true, do not add children that would exceed this depth, where depth is 0 for root items, 1 for children, etc.
   - `create`: function to be used to add your own TreeItem creation logic.
+  - `selectedId`: can be set in the `TreeContainer` to select a tree item automatically.
   - `isOpen`: to indicate whether the tree should show the children. By default, when nothing is set, the `treeItem.isOpen` property is used. If `isOpen` is a string, `treeItem[isOpen]` is used instead. In case `isOpen` is `undefined`, the open/close state is maintained internally. Finally, you can also use a function `(id: string, action: 'get' | 'set', value?: boolean) => boolean | void`, in which case you can maintain the open/close state externally, e.g. for synchronization between different components:
 
 ```ts
@@ -40,6 +41,11 @@ This repository contains two projects:
 - The mithril-tree-component itself.
 
 ## Changes
+
+### 0.7.1 No breaking changes
+
+- `selectedId`: can be set in the `TreeContainer` to select a tree item automatically. In this case, you need to handle the `onSelect` event yourself in order to select the item, as in the example.
+- When creating a new item, this item is selected automatically.
 
 ### 0.7.0 No breaking changes
 

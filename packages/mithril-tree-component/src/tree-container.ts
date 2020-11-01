@@ -11,6 +11,8 @@ export let log: (...args: any[]) => void = () => undefined;
 export const TreeContainer: FactoryComponent<{
   tree: ITreeItem[];
   options: Partial<ITreeOptions>;
+  /** Optional id of the tree item that is selected */
+  selectedId?: string | number;
 }> = () => {
   const state = {
     selectedId: '',
@@ -140,10 +142,10 @@ export const TreeContainer: FactoryComponent<{
       },
       opts.onBeforeCreate,
       (treeItem: ITreeItem) => {
-        onSelect(treeItem, true);
         if (opts.onCreate) {
           opts.onCreate(treeItem);
         }
+        onSelect(treeItem, true);
       }
     );
 
@@ -382,7 +384,7 @@ export const TreeContainer: FactoryComponent<{
     },
     onupdate: setTopWidth,
     oncreate: setTopWidth,
-    view: ({ attrs: { tree } }) => {
+    view: ({ attrs: { tree, selectedId } }) => {
       state.tree = tree;
       const { options, dragOptions, parentId, width } = state;
       if (!state.tree || !options || !dragOptions) {
@@ -421,7 +423,7 @@ export const TreeContainer: FactoryComponent<{
                       width,
                       options,
                       dragOptions,
-                      selectedId: state.selectedId,
+                      selectedId: selectedId || state.selectedId,
                       key: item[id],
                     })
                   ),

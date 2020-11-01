@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "clean": "rimraf ./.cache ./dist",
-    "link": "npm link mithril-tree-component",
+    "link": "pnpm link mithril-tree-component",
     "start": "parcel index.html",
     "build": "parcel build index.html --out-dir ../../docs --public-url https://erikvullings.github.io/mithril-tree-component",
     "deploy": "npm run build"
@@ -30,7 +30,7 @@
   "dependencies": {
     "materialize-css": "^1.0.0",
     "mithril": "^2.0.4",
-    "mithril-tree-component": "^0.6.8"
+    "mithril-tree-component": "^0.7.0"
   },
   "devDependencies": {
     "@types/mithril": "github:MithrilJS/mithril.d.ts#v2",

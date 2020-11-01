@@ -73,7 +73,7 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
             {
               onclick: (ev: MouseEvent) => {
                 ev.stopPropagation();
-                onSelect(item, selectedId !== item[id]);
+                selectedId !== item[id] && onSelect(item, true);
               },
             },
             [
@@ -108,7 +108,8 @@ export const TreeItem: FactoryComponent<ITreeItemAttributes> = () => {
                   canCreate && depth < maxDepth
                     ? m(TreeButton, {
                         buttonName: 'add_child',
-                        onclick: () => {
+                        onclick: (ev: MouseEvent) => {
+                          ev.stopPropagation();
                           _addChildren(item, width);
                           open(item, isExpanded);
                         },

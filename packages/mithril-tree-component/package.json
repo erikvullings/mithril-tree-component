@@ -7,7 +7,7 @@
   "browser": "dist/mithril-tree-component.mjs",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "link": "npm link",
+    "link": "pnpm link",
     "start": "rollup -c -w",
     "build": "npm run build:production",
     "clean": "rimraf ./dist ./node_modules/.ignored",
