@@ -30,13 +30,13 @@
   "dependencies": {
     "materialize-css": "^1.0.0",
     "mithril": "^2.0.4",
-    "mithril-tree-component": "^0.6.6"
+    "mithril-tree-component": "^0.6.8"
   },
   "devDependencies": {
     "@types/mithril": "github:MithrilJS/mithril.d.ts#v2",
-    "rimraf": "^3.0.0",
-    "autoprefixer": "^9.7.3",
+    "rimraf": "^3.0.2",
+    "autoprefixer": "^10.0.1",
     "parcel-bundler": "^1.12.4",
-    "typescript": "^3.7.4"
+    "typescript": "^4.0.5"
   }
 }
