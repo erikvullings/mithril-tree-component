@@ -4,8 +4,6 @@ import sourceMaps from 'rollup-plugin-sourcemaps';
 import typescript from 'rollup-plugin-typescript2';
 import postcss from 'rollup-plugin-postcss';
 import json from 'rollup-plugin-json';
-import simplevars from 'postcss-simple-vars';
-import nested from 'postcss-nested';
 import cssnext from 'postcss-cssnext';
 import cssnano from 'cssnano';
 import { terser } from 'rollup-plugin-terser';
@@ -45,7 +43,7 @@ export default {
     json(),
     postcss({
       extensions: ['.css'],
-      plugins: [simplevars(), nested(), cssnext({ warnForDuplicates: false }), cssnano()],
+      plugins: [cssnext({ warnForDuplicates: false }), cssnano()],
     }),
     // Compile TypeScript files
     typescript({
